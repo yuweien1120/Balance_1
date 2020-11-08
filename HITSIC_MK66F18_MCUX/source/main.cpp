@@ -155,6 +155,14 @@ void MENU_DataSetUp(void)
 {
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
+    static int32_t region_a = 4096;
+    static float region_pi = 3.1415;
+    static menu_list_t *testList;
+    MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType, testList, "FIRST TRY", 0, 0));
+    {
+        MENU_ListInsert(testList, MENU_ItemConstruct(variType, &region_a, "region_i", 1, menuItem_data_region));
+        MENU_ListInsert(testList, MENU_ItemConstruct(varfType, &region_pi, "region_f", 2, menuItem_data_region));
+    }
 }
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
