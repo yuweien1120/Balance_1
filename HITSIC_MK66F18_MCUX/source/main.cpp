@@ -156,7 +156,7 @@ void MENU_DataSetUp(void)
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
     static int32_t region_a = 4096;
-    static float region_pi = 3.1415;
+    static float region_pi = 3.141;
     static menu_list_t *testList;
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType, testList, "FIRST TRY", 0, 0));
     {
