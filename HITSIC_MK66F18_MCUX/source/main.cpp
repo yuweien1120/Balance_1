@@ -92,7 +92,7 @@ void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transfe
 
 inv::i2cInterface_t imu_i2c(nullptr, IMU_INV_I2cRxBlocking, IMU_INV_I2cTxBlocking);
 inv::mpu6050_t imu_6050(imu_i2c);
-
+void pit_test(void*a);
 void main(void)
 {
     /** 初始化阶段，关闭总中断 */
@@ -124,22 +124,35 @@ void main(void)
     extInt_t::init();
     /** 初始化OLED屏幕 */
     DISP_SSD1306_Init();
-    extern const uint8_t DISP_image_100thAnniversary[8][128];
-    DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
+    //extern const uint8_t DISP_image_100thAnniversary[8][128];
+    //DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
+    uint8_t DISP_image_R[8][128];
+    for(int i=0;i<8;i++)
+    {
+        for(int j=0;j<128;j++)
+        {
+            if((i==4||i==3||i==2)&&j>40&&j<100)
+                DISP_image_R[i][j]=0xFF;
+            else
+                DISP_image_R[i][j]=0x00;
+        }
+    }
+    DISP_SSD1306_BufferUpload((uint8_t*)DISP_image_R);
     /** 初始化菜单 */
-    MENU_Init();
-    MENU_Data_NvmReadRegionConfig();
-    MENU_Data_NvmRead(menu_currRegionNum);
+    //MENU_Init();
+    //MENU_Data_NvmReadRegionConfig();
+    //MENU_Data_NvmRead(menu_currRegionNum);
     /** 菜单挂起 */
-    MENU_Suspend();
+    //MENU_Suspend();
     /** 初始化摄像头 */
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
     //TODO: 在这里初始化IMU（MPU6050）
     /** 菜单就绪 */
-    MENU_Resume();
+    //MENU_Resume();
     /** 控制环初始化 */
     //TODO: 在这里初始化控制环
+    pitMgr_t::insert(1000, 23, pit_test,pitMgr_t::enable);
     /** 初始化结束，开启总中断 */
     HAL_ExitCritical();
 
@@ -150,10 +163,12 @@ void main(void)
         //TODO: 在这里添加车模保护代码
     }
 }
-
+void pit_test(void*a)
+{
+    GPIO_PortToggle(GPIOC,1U<<0);
+}
 void MENU_DataSetUp(void)
 {
-
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
     static int32_t region_a = 4096;
