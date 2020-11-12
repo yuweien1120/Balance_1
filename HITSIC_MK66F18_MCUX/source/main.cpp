@@ -87,6 +87,8 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 
 
 void MENU_DataSetUp(void);
+void MOTOR_LeftSet(float dutyCycle);
+void MOTOR_RightSet(float dutyCycle);
 
 cam_zf9v034_configPacket_t cameraCfg;
 dmadvp_config_t dmadvpCfg;
@@ -98,6 +100,8 @@ inv::mpu6050_t imu_6050(imu_i2c);
 
 disp_ssd1306_frameBuffer_t dispBuffer;
 graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
+
+void pit_test(void*a);
 
 void main(void)
 {
@@ -163,14 +167,17 @@ void main(void)
     /** 初始化结束，开启总中断 */
     HAL_ExitCritical();
 
-    /** 内置DSP函数测试 */
-    pitMgr_t::insert(1000, 23, pit_test,pitMgr_t::enable);
+    //pitMgr_t::insert(1000, 23, pit_test,pitMgr_t::enable);
     /** 初始化结束，开启总中断 */
-    HAL_ExitCritical();
+    //HAL_ExitCritical();
+
+    /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
 
-    SCFTM_PWM_Change(FTM0,0,20000,60);
-    SCFTM_PWM_Change(FTM1,1,20000,60);//驱动电机
+    //SCFTM_PWM_Change(FTM0,1,20000,30);//驱动电机
+    //SCFTM_PWM_Change(FTM0,3,20000,30);//驱动电机
+    MOTOR_LeftSet(-30.1);
+    MOTOR_RightSet(30.1);
     while (true)
     {
         //TODO: 在这里添加车模保护代码
@@ -197,6 +204,21 @@ void MENU_DataSetUp(void)
     }
 
     //sc::SC_UnitTest_AutoRefreshAddMenu(menu_menuRoot);
+}
+void MOTOR_LeftSet(float dutyCycle)
+{
+    if(dutyCycle<0)
+        SCFTM_PWM_ChangeHiRes(FTM0,2, 20000,-dutyCycle);
+    else
+        SCFTM_PWM_ChangeHiRes(FTM0,3, 20000,dutyCycle);
+}
+
+void MOTOR_RightSet(float dutyCycle)
+{
+    if(dutyCycle<0)
+        SCFTM_PWM_ChangeHiRes(FTM0,0, 20000,-dutyCycle);
+    else
+        SCFTM_PWM_ChangeHiRes(FTM0,1, 20000,dutyCycle);
 }
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
