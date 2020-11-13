@@ -44,6 +44,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <Balance.hpp>
+
 #include "hitsic_common.h"
 
 /** HITSIC_Module_DRV */
@@ -74,6 +77,7 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 
 #include "sc_adc.h"
 #include "sc_ftm.h"
+#include "sc_upload.h"
 
 /** HITSIC_Module_TEST */
 #include "drv_cam_zf9v034_test.hpp"
@@ -150,18 +154,30 @@ void main(void)
         }
     }
     DISP_SSD1306_BufferUpload((uint8_t*)DISP_image_R);*/
-    CTRL_Init();
-    CTRL_FilterInit();
+    //CTRL_Init();
+    //CTRL_FilterInit();
     /** 初始化菜单 */
     MENU_Init();
     MENU_Data_NvmReadRegionConfig();
     MENU_Data_NvmRead(menu_currRegionNum);
-    CTRL_MenuInit(menu_menuRoot);
+    //CTRL_MenuInit(menu_menuRoot);
     /** 菜单挂起 */
     MENU_Suspend();
     /** 初始化摄像头 */
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
+    if(true!=imu_6050.Detect())
+        {
+            while(1);
+        }
+        if(0U!=imu_6050.Init())
+        {
+            while(1);
+        }
+        if(0U!=imu_6050.SelfTest())
+        {
+
+        }
     //TODO: 在这里初始化IMU（MPU6050）
     /** 菜单就绪 */
     MENU_Resume();
@@ -175,8 +191,14 @@ void main(void)
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
     MENU_DataSetUp();
+
+    /*电机测试
     MOTOR_LeftSet(30);
-    MOTOR_RightSet(30);
+    MOTOR_RightSet(30);*/
+
+    /**传参数到上位机*/
+    SCHOST_SendVariable(imu6050_accl,3);
+    SCHOST_SendVariable(imu6050_gyro,3);
     while (true)
     {
         //TODO: 在这里添加车模保护代码
@@ -187,27 +209,14 @@ void pit_test(void*a)
 {
     GPIO_PortToggle(GPIOC,1U<<0);
 }
-/*void MENU_DataSetUp(void)
+
+void MENU_DataSetUp(void)
 {
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
-    static int32_t region_a = 4096;
-    static float region_pi = 3.1415;
-    static menu_list_t *testList;
-    testList = MENU_ListConstruct("TestList", 20, menu_menuRoot);
-    assert(testList);
-    MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType, testList, "FIRST TRY", 0, 0));
-    {
-        MENU_ListInsert(testList, MENU_ItemConstruct(variType, &region_a, "region_i", 1, menuItem_data_region));
-        MENU_ListInsert(testList, MENU_ItemConstruct(varfType, &region_pi, "region_f", 2, menuItem_data_region));
-    }
-    MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType, testList, "IMU", 0, 0));
-    {
-        MENU_ListInsert(testList, MENU_ItemConstruct(variType, &region_a, "region_i", 1, menuItem_data_region));
-    }
+    Balance_MenuInit(menu_menuRoot);
+}
 
-    //sc::SC_UnitTest_AutoRefreshAddMenu(menu_menuRoot);
-}*/
 void MOTOR_LeftSet(float dutyCycle)
 {
     if(dutyCycle<0)
