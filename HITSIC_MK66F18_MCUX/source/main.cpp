@@ -44,9 +44,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include <Balance.hpp>
-
 #include "hitsic_common.h"
 
 /** HITSIC_Module_DRV */
@@ -77,7 +74,6 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 
 #include "sc_adc.h"
 #include "sc_ftm.h"
-#include "sc_upload.h"
 
 /** HITSIC_Module_TEST */
 #include "drv_cam_zf9v034_test.hpp"
@@ -88,11 +84,10 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 
 /** SCLIB_TEST */
 #include "sc_test.hpp"
-#include "ur_control.hpp"
+#include "Balance.hpp"
+#include "sc_host.h"
 
-//void MENU_DataSetUp(void);
-void MOTOR_LeftSet(float dutyCycle);//dutyCycle为占空比，范围是-100到100
-void MOTOR_RightSet(float dutyCycle);
+void MENU_DataSetUp(void);
 
 cam_zf9v034_configPacket_t cameraCfg;
 dmadvp_config_t dmadvpCfg;
@@ -104,8 +99,6 @@ inv::mpu6050_t imu_6050(imu_i2c);
 
 disp_ssd1306_frameBuffer_t dispBuffer;
 graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
-
-void pit_test(void*a);
 
 void main(void)
 {
@@ -130,84 +123,53 @@ void main(void)
 
     /** 初始化OLED屏幕 */
     DISP_SSD1306_Init();
-    extern const uint8_t DISP_image_100thAnniversary[8][128];
-    DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
+    //extern const uint8_t DISP_image_100thAnniversary[8][128];
+    //DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
     /** 初始化ftfx_Flash */
     FLASH_SimpleInit();
     /** 初始化PIT中断管理器 */
     pitMgr_t::init();
     /** 初始化I/O中断管理器 */
     extInt_t::init();
-    /** 初始化OLED屏幕 */
-    DISP_SSD1306_Init();
-    //extern const uint8_t DISP_image_100thAnniversary[8][128];
-    //DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
-    /*uint8_t DISP_image_R[8][128];
-    for(int i=0;i<8;i++)
-    {
-        for(int j=0;j<128;j++)
-        {
-            if((i==4||i==3||i==2)&&j>40&&j<100)
-                DISP_image_R[i][j]=0xFF;
-            else
-                DISP_image_R[i][j]=0x00;
-        }
-    }
-    DISP_SSD1306_BufferUpload((uint8_t*)DISP_image_R);*/
-    //CTRL_Init();
-    //CTRL_FilterInit();
     /** 初始化菜单 */
     MENU_Init();
     MENU_Data_NvmReadRegionConfig();
     MENU_Data_NvmRead(menu_currRegionNum);
-    //CTRL_MenuInit(menu_menuRoot);
     /** 菜单挂起 */
-    MENU_Suspend();
+    //MENU_Suspend();
     /** 初始化摄像头 */
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
-    if(true!=imu_6050.Detect())
-        {
-            while(1);
-        }
-        if(0U!=imu_6050.Init())
-        {
-            while(1);
-        }
-        if(0U!=imu_6050.SelfTest())
-        {
-
-        }
     //TODO: 在这里初始化IMU（MPU6050）
+    if(true!=imu_6050.Detect())
+    {
+        while(1);
+    }
+    if(0U!=imu_6050.Init())
+    {
+        while(1);
+    }
+    if(0U!=imu_6050.SelfTest())
+    {
+
+    }
     /** 菜单就绪 */
     //MENU_Resume();
     /** 控制环初始化 */
     //TODO: 在这里初始化控制环
+    Balance_Init();
+    AngleFilter_Init();
     /** 初始化结束，开启总中断 */
     HAL_ExitCritical();
 
-    //pitMgr_t::insert(1000, 23, pit_test,pitMgr_t::enable);
-
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
-    MENU_DataSetUp();
 
-    /*电机测试
-    MOTOR_LeftSet(30);
-    MOTOR_RightSet(30);*/
-
-    /**传参数到上位机*/
-    SCHOST_SendVariable(imu6050_accl,3);
-    SCHOST_SendVariable(imu6050_gyro,3);
     while (true)
     {
         //TODO: 在这里添加车模保护代码
+        SCHOST_VarUpload(Angle,3);
     }
-}
-
-void pit_test(void*a)
-{
-    GPIO_PortToggle(GPIOC,1U<<0);
 }
 
 void MENU_DataSetUp(void)
@@ -216,23 +178,6 @@ void MENU_DataSetUp(void)
     //TODO: 在这里添加子菜单和菜单项
     Balance_MenuInit(menu_menuRoot);
 }
-
-void MOTOR_LeftSet(float dutyCycle)
-{
-    if(dutyCycle<0)
-        SCFTM_PWM_ChangeHiRes(FTM0,2, 20000,-dutyCycle);
-    else
-        SCFTM_PWM_ChangeHiRes(FTM0,3, 20000,dutyCycle);
-}
-
-void MOTOR_RightSet(float dutyCycle)
-{
-    if(dutyCycle<0)
-        SCFTM_PWM_ChangeHiRes(FTM0,0, 20000,-dutyCycle);
-    else
-        SCFTM_PWM_ChangeHiRes(FTM0,1, 20000,dutyCycle);
-}
-
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
 {
