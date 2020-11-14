@@ -84,7 +84,8 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 
 /** SCLIB_TEST */
 #include "sc_test.hpp"
-
+#include "Balance.hpp"
+#include "sc_host.h"
 
 void MENU_DataSetUp(void);
 
@@ -122,8 +123,8 @@ void main(void)
 
     /** 初始化OLED屏幕 */
     DISP_SSD1306_Init();
-    extern const uint8_t DISP_image_100thAnniversary[8][128];
-    DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
+    //extern const uint8_t DISP_image_100thAnniversary[8][128];
+    //DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
     /** 初始化ftfx_Flash */
     FLASH_SimpleInit();
     /** 初始化PIT中断管理器 */
@@ -135,15 +136,29 @@ void main(void)
     MENU_Data_NvmReadRegionConfig();
     MENU_Data_NvmRead(menu_currRegionNum);
     /** 菜单挂起 */
-    MENU_Suspend();
+    //MENU_Suspend();
     /** 初始化摄像头 */
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
     //TODO: 在这里初始化IMU（MPU6050）
+    if(true!=imu_6050.Detect())
+    {
+        while(1);
+    }
+    if(0U!=imu_6050.Init())
+    {
+        while(1);
+    }
+    if(0U!=imu_6050.SelfTest())
+    {
+
+    }
     /** 菜单就绪 */
     //MENU_Resume();
     /** 控制环初始化 */
     //TODO: 在这里初始化控制环
+    Balance_Init();
+    AngleFilter_Init();
     /** 初始化结束，开启总中断 */
     HAL_ExitCritical();
 
@@ -153,6 +168,7 @@ void main(void)
     while (true)
     {
         //TODO: 在这里添加车模保护代码
+        SCHOST_VarUpload(Angle,3);
     }
 }
 
@@ -160,6 +176,7 @@ void MENU_DataSetUp(void)
 {
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
+    Balance_MenuInit(menu_menuRoot);
 }
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
