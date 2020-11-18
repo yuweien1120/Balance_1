@@ -86,6 +86,7 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 #include "sc_test.hpp"
 #include "Balance.hpp"
 #include "sc_host.h"
+#include "image.h"
 
 void MENU_DataSetUp(void);
 
@@ -103,7 +104,7 @@ graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
 void main(void)
 {
     /** 初始化阶段，关闭总中断 */
-    HAL_EnterCritical();
+      HAL_EnterCritical();
 
     /** BSP（板级支持包）初始化 */
     RTECLK_HsRun_180MHz();
@@ -139,6 +140,22 @@ void main(void)
     //MENU_Suspend();
     /** 初始化摄像头 */
     //TODO: 在这里初始化摄像头
+    //初始化部分：
+//    cam_zf9v034_configPacket_t cameraCfg;
+//    CAM_ZF9V034_GetDefaultConfig(&cameraCfg);                                   //设置摄像头配置
+//    CAM_ZF9V034_CfgWrite(&cameraCfg);                                   //写入配置
+//    dmadvp_config_t dmadvpCfg;
+//    CAM_ZF9V034_GetReceiverConfig(&dmadvpCfg, &cameraCfg);    //生成对应接收器的配置数据，使用此数据初始化接受器并接收图像数据。
+//    DMADVP_Init(DMADVP0, &dmadvpCfg);
+//    dmadvp_handle_t dmadvpHandle;
+//    DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_UnitTestDmaCallback);
+//    uint8_t *imageBuffer0 = new uint8_t[DMADVP0->imgSize];
+//    //uint8_t *imageBuffer1 = new uint8_t[DMADVP0->imgSize];
+//    uint8_t *fullBuffer = NULL;
+//    disp_ssd1306_frameBuffer_t *dispBuffer = new disp_ssd1306_frameBuffer_t;
+//    DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer0);
+//    //DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer1);
+//    DMADVP_TransferStart(DMADVP0, &dmadvpHandle);
     /** 初始化IMU */
     //TODO: 在这里初始化IMU（MPU6050）
     if(true!=imu_6050.Detect())
@@ -168,7 +185,30 @@ void main(void)
     while (true)
     {
         //TODO: 在这里添加车模保护代码
-        SCHOST_VarUpload(Angle,3);
+        //SCHOST_VarUpload(Angle,3);
+//        while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
+//
+//
+//        dispBuffer->Clear();
+//        const uint8_t imageTH = 100;
+//        for (int i = 0; i < cameraCfg.imageRow; i += 2)
+//        {
+//            int16_t imageRow = i >> 1;//除以2 为了加速;
+//            int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+//            for (int j = 0; j < cameraCfg.imageCol; j += 2)
+//            {
+//                int16_t dispCol = j >> 1;
+//                if (fullBuffer[i * cameraCfg.imageCol + j] > imageTH)
+//                {
+//                    dispBuffer->SetPixelColor(dispCol, imageRow, 1);
+//                }
+//            }
+//         }
+
+
+//        DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+//        DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
+//        DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
     }
 }
 

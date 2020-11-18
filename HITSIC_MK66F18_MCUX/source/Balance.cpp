@@ -7,11 +7,13 @@
 
 #include "Balance.hpp"
 pitMgr_t *balance_angle=nullptr;
+pitMgr_t *balance_speed=nullptr;
 /*Balance初始化部分*/
 void Balance_Init()
 {
     balance_angle= pitMgr_t::insert(5U, 4U,Balance_Angle, pitMgr_t::enable);
     assert(balance_angle);
+    balance_speed= pitMgr_t::insert(10U, 2U,Balance_Speed, pitMgr_t::enable);
 }
 void Balance_MenuInit(menu_list_t *menuList)
 {
@@ -50,6 +52,10 @@ void Balance_MenuInit(menu_list_t *menuList)
                 menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Balance_pidoutput, "ang.out", 0U,
                 menuItem_data_NoSave | menuItem_data_NoLoad));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed[0], "speed0", 9U,
+                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed[1], "speed1", 10U,
+                menuItem_data_region));
      }
 }
 float imu6050_accl[3] = {0.0f, 0.0f, 0.0f};
@@ -99,6 +105,7 @@ void AngleFilter_update(uint32_t updatetime_ms)
     Angle[1]=Angle_gyro;
     Angle[2]=Angle_filter;
 }
+/*直立环*/
 pidCtrl_t Balance_Pid =
 {
     .kp = 0.0f, .ki = 0.0f, .kd = 0.0f,
@@ -117,7 +124,15 @@ void Balance_Angle()
     Balance_pidoutput=PIDCTRL_CalcPIDGain(&Balance_Pid);
     CTRL_MotorUpdate(Balance_pidoutput,Balance_pidoutput);
 }
-
+/*速度环*/
+float speed[2]={0,0};
+void Balance_Speed()
+{
+    speed[0]=((float)SCFTM_GetSpeed(ENCO_L_PERIPHERAL));
+    SCFTM_ClearSpeed(ENCO_L_PERIPHERAL);
+    speed[1]=((float)SCFTM_GetSpeed(ENCO_R_PERIPHERAL));
+    SCFTM_ClearSpeed(ENCO_R_PERIPHERAL);
+}
 void CTRL_MotorUpdate(float motorL, float motorR)
 {
     /** 左电机满载 **/

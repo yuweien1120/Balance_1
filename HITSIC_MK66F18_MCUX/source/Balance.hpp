@@ -38,8 +38,7 @@ extern float Angle_set;
 extern pidCtrl_t Balance_Pid;
 void Balance_Angle();
 void CTRL_MotorUpdate(float motorL, float motorR);
-
-
-
-
+/*速度环*/
+void Balance_Speed();
+extern float speed[2];
 #endif /* BALANCE_HPP_ */
