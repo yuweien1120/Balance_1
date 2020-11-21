@@ -13,7 +13,7 @@ void Balance_Init()
 {
     balance_angle= pitMgr_t::insert(5U, 4U,Balance_Angle, pitMgr_t::enable);
     assert(balance_angle);
-    balance_speed= pitMgr_t::insert(10U, 2U,Balance_Speed, pitMgr_t::enable);
+    balance_speed= pitMgr_t::insert(20U, 2U,Balance_Speed, pitMgr_t::enable);
 }
 void Balance_MenuInit(menu_list_t *menuList)
 {
@@ -38,10 +38,16 @@ void Balance_MenuInit(menu_list_t *menuList)
             MENU_ListInsert(filterMenuList, MENU_ItemConstruct(varfType, &Angle[2], "Angle_filter", 0U,
                                 menuItem_data_NoSave | menuItem_data_NoLoad));
         }
-     static menu_list_t *BalanceMenuList=MENU_ListConstruct("Balance", 20, menuList);
+     static menu_list_t *BalanceMenuList=MENU_ListConstruct("Balance", 32, menuList);
      assert(BalanceMenuList);
      MENU_ListInsert(menuList, MENU_ItemConstruct(menuType, BalanceMenuList, "Balance", 0, 0));
      {
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(nullType, NULL, "ENB", 0, 0));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &Ang_En, "ang.en", 0U,
+                       menuItem_data_NoSave | menuItem_data_NoLoad | menuItem_dataExt_HasMinMax));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &Spd_En, "spd.en", 0U,
+                       menuItem_data_NoSave | menuItem_data_NoLoad | menuItem_dataExt_HasMinMax));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(nullType, NULL, "ANG", 0, 0));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Angle_set, "angSet", 9U,
                 menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Balance_Pid.kp, "ang.kp", 10U,
@@ -52,10 +58,23 @@ void Balance_MenuInit(menu_list_t *menuList)
                 menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Balance_pidoutput, "ang.out", 0U,
                 menuItem_data_NoSave | menuItem_data_NoLoad));
-        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed[0], "speed0", 9U,
+
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(nullType, NULL, "SPD", 0, 0));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed_set, "speed_set", 14U,
                 menuItem_data_region));
-        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed[1], "speed1", 10U,
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Speed_Pid.kp, "spd.kp", 15U,
                 menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Speed_Pid.ki, "spd.ki", 16U,
+                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Speed_Pid.kd, "spd.kd", 17U,
+                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Speed_pidoutput, "spd.out", 0U,
+                menuItem_data_NoSave | menuItem_data_NoLoad));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed_L, "speed_L", 0U,
+                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &speed_R, "speed_R", 0U,
+                menuItem_data_region));
+
      }
 }
 float imu6050_accl[3] = {0.0f, 0.0f, 0.0f};
@@ -106,6 +125,7 @@ void AngleFilter_update(uint32_t updatetime_ms)
     Angle[2]=Angle_filter;
 }
 /*直立环*/
+int32_t Ang_En=0;
 pidCtrl_t Balance_Pid =
 {
     .kp = 0.0f, .ki = 0.0f, .kd = 0.0f,
@@ -120,18 +140,65 @@ void Balance_Angle()
         imu_6050.Convert(&imu6050_accl[0], &imu6050_accl[1], &imu6050_accl[2], &imu6050_gyro[0], &imu6050_gyro[1], &imu6050_gyro[2]);
         AngleFilter_update(5);
     }
-    PIDCTRL_ErrUpdate(&Balance_Pid,Angle_set-Angle_filter );
-    Balance_pidoutput=PIDCTRL_CalcPIDGain(&Balance_Pid);
-    CTRL_MotorUpdate(Balance_pidoutput,Balance_pidoutput);
+    if(1 == Ang_En)
+    {
+        PIDCTRL_ErrUpdate(&Balance_Pid,Angle_set-Angle_filter-Speed_pidoutput);
+        Balance_pidoutput=PIDCTRL_CalcPIDGain(&Balance_Pid);
+        CTRL_MotorUpdate(Balance_pidoutput,Balance_pidoutput);
+    }
+    else
+    {
+        Balance_pidoutput = 0.0f;
+    }
+
 }
 /*速度环*/
-float speed[2]={0,0};
+int32_t Spd_En=0;
+float speed_L=0.0f;
+float speed_R=0.0f;
+float speed_avg=0.0f;//两边速度的平均值
+pidCtrl_t Speed_Pid =
+{
+    .kp = 0.0f, .ki = 0.0f, .kd = 0.0f,
+    .errCurr = 0.0f, .errIntg = 0.0f, .errDiff = 0.0f, .errPrev = 0.0f,
+};
+float speed_pidoutput_filter[10]={0.0f};
+int filter_count=0;
+float sum=0.0;
+float Speed_pidoutput=0.0;
+float speed_set=0.0;
 void Balance_Speed()
 {
-    speed[0]=((float)SCFTM_GetSpeed(ENCO_L_PERIPHERAL));
+    speed_L=((float)SCFTM_GetSpeed(ENCO_L_PERIPHERAL));//没写完，需要看车子走一米编码器的读数
     SCFTM_ClearSpeed(ENCO_L_PERIPHERAL);
-    speed[1]=((float)SCFTM_GetSpeed(ENCO_R_PERIPHERAL));
+    speed_R=((float)SCFTM_GetSpeed(ENCO_R_PERIPHERAL));
     SCFTM_ClearSpeed(ENCO_R_PERIPHERAL);
+    speed_avg=(speed_L+speed_R)/(2.0f);
+
+    PIDCTRL_ErrUpdate(&Speed_Pid, speed_avg - speed_set);
+    /*窗口滤波部分*/
+    if(1 == Spd_En)
+    {
+      speed_pidoutput_filter[filter_count]= PIDCTRL_CalcPIDGain(&Speed_Pid);
+      filter_count++;
+      if(filter_count==10)
+        filter_count==0;
+      sum=0.0;
+      for(int i=0;i<10;i++)
+      {
+        sum+=speed_pidoutput_filter[i];
+      }
+      Speed_pidoutput=sum/10;
+    }
+    else
+    {
+        filter_count=0;
+        for(int i=0;i<10;i++)
+        {
+            speed_pidoutput_filter[i]=0.0f;
+        }
+        Speed_pidoutput=0.0f;
+    }
 }
 void CTRL_MotorUpdate(float motorL, float motorR)
 {
