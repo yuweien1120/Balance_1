@@ -187,8 +187,8 @@ void main(void)
         //TODO: 在这里添加车模保护代码
         //SCHOST_VarUpload(Angle,3);
 //        while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
-
-
+//
+//
 //        dispBuffer->Clear();
 //        const uint8_t imageTH = 100;
 //        for (int i = 0; i < cameraCfg.imageRow; i += 2)
