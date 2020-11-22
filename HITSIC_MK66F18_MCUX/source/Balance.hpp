@@ -38,7 +38,16 @@ extern float Angle_set;
 extern pidCtrl_t Balance_Pid;
 void Balance_Angle();
 void CTRL_MotorUpdate(float motorL, float motorR);
+/*速度环*/
+//extern float speed_L,speed_R;//左右轮速度
+//extern float speed_avg;
+//extern pidCtrl_t Speed_Pid;
+//extern float Speed_pidoutput;
+//extern float speed_set;//速度期望
+//extern float speed_pidoutput_filter[10];
+////extern int filter_count;
 
+void Balance_Speed();
 
 
 
