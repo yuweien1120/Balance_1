@@ -415,7 +415,7 @@ instance:
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 const lpuart_config_t DBG_LPUART_config = {
-  .baudRate_Bps = 921600UL,
+  .baudRate_Bps = 1152000UL,
   .parityMode = kLPUART_ParityDisabled,
   .dataBitsCount = kLPUART_EightDataBits,
   .isMsb = false,

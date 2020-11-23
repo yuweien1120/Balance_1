@@ -8,13 +8,16 @@
 #include "Balance.hpp"
 pitMgr_t *balance_angle=nullptr;
 pitMgr_t *balance_speed=nullptr;
+pitMgr_t *balance_dir=nullptr;
 /*Balance初始化部分*/
 void Balance_Init()
 {
     balance_angle= pitMgr_t::insert(5U, 4U,Balance_Angle, pitMgr_t::enable);
     assert(balance_angle);
-    balance_speed= pitMgr_t::insert(20U,3U,Balance_Speed, pitMgr_t::enable);
+    balance_speed= pitMgr_t::insert(20U,2U,Balance_Speed, pitMgr_t::enable);
     assert(balance_speed);
+    balance_dir=pitMgr_t::insert(5U,3U,Balance_Speed, pitMgr_t::enable);
+    assert(balance_dir);
 }
 void Balance_MenuInit(menu_list_t *menuList)
 {
