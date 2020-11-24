@@ -104,7 +104,7 @@ graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
 void main(void)
 {
     /** 初始化阶段，关闭总中断 */
-      HAL_EnterCritical();
+    HAL_EnterCritical();
 
     /** BSP（板级支持包）初始化 */
     RTECLK_HsRun_180MHz();
@@ -181,13 +181,17 @@ void main(void)
 
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
-
+    float v[1];
+    uint8_t *img=IMG[0];
     while (true)
     {
         //TODO: 在这里添加车模保护代码
-        //SCHOST_VarUpload(Angle,3);
-        while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
+        //v[0]=100*speed_avg;
+        //SCHOST_VarUpload(v,1);
 
+        while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
+        THRE();
+        image_main();
 
 //        dispBuffer->Clear();
 //        const uint8_t imageTH = 100;
@@ -207,6 +211,7 @@ void main(void)
 //
 //
 //        DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+        SCHOST_ImgUpload(fullBuffer,120,188);
         DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
         DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
     }

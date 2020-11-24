@@ -40,8 +40,8 @@ uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 uint8_t mid_line[CAMERA_H];
 int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
-uint8_t threshold = 160;//阈值
-
+uint8_t threshold = 90;//阈值
+uint8_t* fullBuffer;
 ////////////////////////////////////////////
 //功能：二值化
 //输入：灰度图片
@@ -412,13 +412,13 @@ void get_mid_line(void)
 ///////////////////////////////////////////
 void image_main()
 {
+    //THRE();
     search_white_range();
     find_all_connect();
     find_road();
     /*到此处为止，我们已经得到了属于赛道的结构体数组my_road[CAMERA_H]*/
     ordinary_two_line();
     get_mid_line();
-
     for (int i = NEAR_LINE; i >= FAR_LINE; i--)
         if (mid_line[i] != MISS)
             IMG[i][mid_line[i]] = red;
