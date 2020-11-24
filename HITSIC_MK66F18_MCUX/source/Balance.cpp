@@ -234,6 +234,14 @@ void Balance_Dir()
         mid_err=mid_line[60]-94;
         PIDCTRL_ErrUpdate(&Dir_Pid, kp_1*mid_err*speed_avg-imu6050_gyro[2]);
         Dir_pidoutput = PIDCTRL_CalcPIDGain(&Dir_Pid);
+        if(Dir_pidoutput>30.0f)
+        {
+            Dir_pidoutput=30.0f;
+        }
+        else if(Dir_pidoutput<-30.0f)
+        {
+            Dir_pidoutput=-30.0f;
+        }
     }
     else
     {
