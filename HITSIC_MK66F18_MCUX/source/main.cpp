@@ -192,25 +192,29 @@ void main(void)
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
         THRE();
         image_main();
+        if(!GPIO_PinRead(GPIOA,9))
+        {
+            MENU_Suspend();
+            dispBuffer->Clear();
+            const uint8_t imageTH = 100;
+            for (int i = 0; i < cameraCfg.imageRow; i += 2)
+            {
+                int16_t imageRow = i >> 1;//除以2 为了加速;
+                int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+                for (int j = 0; j < cameraCfg.imageCol; j += 2)
+                {
+                    int16_t dispCol = j >> 1;
+                    if (fullBuffer[i * cameraCfg.imageCol + j] > imageTH)
+                    {
+                        dispBuffer->SetPixelColor(dispCol, imageRow, 1);
+                    }
+                }
+             }
 
-//        dispBuffer->Clear();
-//        const uint8_t imageTH = 100;
-//        for (int i = 0; i < cameraCfg.imageRow; i += 2)
-//        {
-//            int16_t imageRow = i >> 1;//除以2 为了加速;
-//            int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
-//            for (int j = 0; j < cameraCfg.imageCol; j += 2)
-//            {
-//                int16_t dispCol = j >> 1;
-//                if (fullBuffer[i * cameraCfg.imageCol + j] > imageTH)
-//                {
-//                    dispBuffer->SetPixelColor(dispCol, imageRow, 1);
-//                }
-//            }
-//         }
-//
-//
-//        DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+
+            DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+        }
+
         SCHOST_ImgUpload(fullBuffer,120,188);
         DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
         DMADVP_TransferStart(DMADVP0,&dmadvpHandle);

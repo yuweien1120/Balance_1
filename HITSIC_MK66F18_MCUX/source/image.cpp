@@ -411,6 +411,7 @@ void get_mid_line(void)
 //备注：
 ///////////////////////////////////////////
 void image_main()
+
 {
     //THRE();
     search_white_range();

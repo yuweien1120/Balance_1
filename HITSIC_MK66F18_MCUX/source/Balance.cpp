@@ -6,6 +6,7 @@
  */
 
 #include "Balance.hpp"
+#include "image.h"
 pitMgr_t *balance_angle=nullptr;
 pitMgr_t *balance_speed=nullptr;
 pitMgr_t *balance_dir=nullptr;
@@ -91,6 +92,14 @@ void Balance_MenuInit(menu_list_t *menuList)
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Dir_pidoutput, "dir.out", 20U,
                                 menuItem_data_region));
      }
+     static menu_list_t *ImageMenuList=MENU_ListConstruct("Image", 32, menuList);
+          assert(ImageMenuList);
+          MENU_ListInsert(menuList, MENU_ItemConstruct(menuType, ImageMenuList, "Image", 0, 0));
+                  {
+
+                      MENU_ListInsert(ImageMenuList, MENU_ItemConstruct(varfType,&threshold, "threshold", 0U,
+                              menuItem_data_NoSave | menuItem_data_NoLoad));
+                  }
 }
 float imu6050_accl[3] = {0.0f, 0.0f, 0.0f};
 float imu6050_gyro[3] = {0.0f, 0.0f, 0.0f};
@@ -231,6 +240,7 @@ void Balance_Dir()
 {
     if(1 == ctrl_dirCtrlEn[0])
     {
+
         mid_err=mid_line[60]-94;
         PIDCTRL_ErrUpdate(&Dir_Pid, kp_1*mid_err*speed_avg-imu6050_gyro[2]);
         Dir_pidoutput = PIDCTRL_CalcPIDGain(&Dir_Pid);
