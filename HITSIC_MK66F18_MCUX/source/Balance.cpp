@@ -16,7 +16,7 @@ void Balance_Init()
     assert(balance_angle);
     balance_speed= pitMgr_t::insert(20U,2U,Balance_Speed, pitMgr_t::enable);
     assert(balance_speed);
-    balance_dir=pitMgr_t::insert(5U,3U,Balance_Speed, pitMgr_t::enable);
+    balance_dir=pitMgr_t::insert(5U,3U,Balance_Dir, pitMgr_t::enable);
     assert(balance_dir);
 }
 void Balance_MenuInit(menu_list_t *menuList)
@@ -88,8 +88,8 @@ void Balance_MenuInit(menu_list_t *menuList)
                                 menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Dir_Pid.kd, "dir.kd", 20U,
                                 menuItem_data_region));
-        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Dir_pidoutput, "dir.out", 20U,
-                                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Dir_pidoutput, "dir.out", 0U,
+                menuItem_data_NoSave | menuItem_data_NoLoad));
      }
 }
 float imu6050_accl[3] = {0.0f, 0.0f, 0.0f};
@@ -227,12 +227,14 @@ pidCtrl_t Dir_Pid =
 float kp_1=0.0f;
 float mid_err=0.0f;
 float Dir_pidoutput=0.0f;
+float w_dir=0.0f;
 void Balance_Dir()
 {
     if(1 == ctrl_dirCtrlEn[0])
     {
         mid_err=mid_line[60]-94;
-        PIDCTRL_ErrUpdate(&Dir_Pid, kp_1*mid_err*speed_avg-imu6050_gyro[2]);
+        w_dir=sqrt(imu6050_gyro[2]*imu6050_gyro[2]+imu6050_gyro[0]*imu6050_gyro[0]);
+        PIDCTRL_ErrUpdate(&Dir_Pid, kp_1*mid_err*speed_avg-w_dir);
         Dir_pidoutput = PIDCTRL_CalcPIDGain(&Dir_Pid);
         if(Dir_pidoutput>30.0f)
         {

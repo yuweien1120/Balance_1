@@ -186,8 +186,8 @@ void main(void)
     while (true)
     {
         //TODO: 在这里添加车模保护代码
-        //v[0]=100*speed_avg;
-        //SCHOST_VarUpload(v,1);
+        v[0]=mid_err;
+        SCHOST_VarUpload(v,1);
 
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
         THRE();
@@ -222,6 +222,7 @@ void MENU_DataSetUp(void)
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
     Balance_MenuInit(menu_menuRoot);
+
 }
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
