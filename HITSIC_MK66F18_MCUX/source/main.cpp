@@ -181,39 +181,50 @@ void main(void)
 
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
-    float v[1];
+    float v[2];
     uint8_t *img=IMG[0];
+
     while (true)
     {
         //TODO: 在这里添加车模保护代码
-        v[0]=mid_err;
-        SCHOST_VarUpload(v,1);
-
+        v[0]=Dir_pidoutput;
+        //v[1]=-w_dir;
+        //SCHOST_VarUpload(v,2);
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
-        THRE();
+        THRE(fullBuffer);
         image_main();
+        if(!GPIO_PinRead(GPIOA,9))
+        {
+            SDK_DelayAtLeastUs(50000, 180000000);
+            MENU_Suspend();
+            dispBuffer->Clear();
+            uint8_t imageTH=150;
+            for (int i = 0; i < cameraCfg.imageRow; i += 2)
+            {
+                int16_t imageRow = i >> 1;//除以2 为了加速;
+                int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+                for (int j = 0; j < cameraCfg.imageCol; j += 2)
+                {
+                    int16_t dispCol = j >> 1;
+                    if (fullBuffer[i * cameraCfg.imageCol + j] > threshold)
+                    {
+                        dispBuffer->SetPixelColor(dispCol, imageRow, 1);
+                    }
+                }
+             }
+            DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+            DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
+            DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
+            if(GPIO_PinRead(GPIOA,9))
+             {
+                 SDK_DelayAtLeastUs(50000, 180000000);
+                 MENU_Resume();
+                 break;
+             }
+        }
 
-//        dispBuffer->Clear();
-//        const uint8_t imageTH = 100;
-//        for (int i = 0; i < cameraCfg.imageRow; i += 2)
-//        {
-//            int16_t imageRow = i >> 1;//除以2 为了加速;
-//            int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
-//            for (int j = 0; j < cameraCfg.imageCol; j += 2)
-//            {
-//                int16_t dispCol = j >> 1;
-//                if (fullBuffer[i * cameraCfg.imageCol + j] > imageTH)
-//                {
-//                    dispBuffer->SetPixelColor(dispCol, imageRow, 1);
-//                }
-//            }
-//         }
-//
-//
-//        DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
-        SCHOST_ImgUpload(fullBuffer,120,188);
-        DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
-        DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
+        //SCHOST_ImgUpload(fullBuffer,120,188);
+
     }
 }
 
@@ -222,7 +233,8 @@ void MENU_DataSetUp(void)
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
     //TODO: 在这里添加子菜单和菜单项
     Balance_MenuInit(menu_menuRoot);
-
+//    MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(varfType, &threshold, "threshold", 21U,
+//            menuItem_data_global));
 }
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)

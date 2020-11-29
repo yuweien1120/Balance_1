@@ -6,6 +6,7 @@
  */
 
 #include "Balance.hpp"
+#include "image.h"
 pitMgr_t *balance_angle=nullptr;
 pitMgr_t *balance_speed=nullptr;
 pitMgr_t *balance_dir=nullptr;
@@ -90,7 +91,17 @@ void Balance_MenuInit(menu_list_t *menuList)
                                 menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Dir_pidoutput, "dir.out", 0U,
                 menuItem_data_NoSave | menuItem_data_NoLoad));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &mid_err, "mid_err", 0U,
+                        menuItem_data_NoSave | menuItem_data_NoLoad));
      }
+//     static menu_list_t *ImageMenuList=MENU_ListConstruct("Image", 32, menuList);
+//          assert(ImageMenuList);
+//          MENU_ListInsert(menuList, MENU_ItemConstruct(menuType, ImageMenuList, "Image", 0, 0));
+//                  {
+//
+//                      MENU_ListInsert(ImageMenuList, MENU_ItemConstruct(varfType,&threshold, "threshold", 0U,
+//                              menuItem_data_NoSave | menuItem_data_NoLoad));
+//                  }
 }
 float imu6050_accl[3] = {0.0f, 0.0f, 0.0f};
 float imu6050_gyro[3] = {0.0f, 0.0f, 0.0f};
@@ -157,7 +168,7 @@ void Balance_Angle()
     }
     if(1 == ctrl_angCtrlEn[0])
     {
-       PIDCTRL_ErrUpdate(&Balance_Pid,Angle_set-Angle_filter-Speed_pidoutput);//
+       PIDCTRL_ErrUpdate(&Balance_Pid,Angle_set-Angle_filter-Speed_pidoutput);
        Balance_pidoutput=PIDCTRL_CalcPIDGain(&Balance_Pid);
     }
     else
@@ -193,17 +204,17 @@ void Balance_Speed()
         Speed_pidoutput=PIDCTRL_CalcPIDGain(&Speed_Pid);
         if(1 == ctrl_spdCtrlEn[0])
         {
-         /*窗口滤波部分*/
-        speed_pidoutput_filter[filter_count]= PIDCTRL_CalcPIDGain(&Speed_Pid);
-        filter_count++;
-        if(filter_count==10)
-           filter_count=0;
-        sum=0.0;
-        for(int i=0;i<10;i++)
-        {
-            sum+=speed_pidoutput_filter[i];
-        }
-        Speed_pidoutput=sum/10;
+             /*窗口滤波部分*/
+            speed_pidoutput_filter[filter_count]= PIDCTRL_CalcPIDGain(&Speed_Pid);
+            filter_count++;
+            if(filter_count==10)
+               filter_count=0;
+            sum=0.0;
+            for(int i=0;i<10;i++)
+            {
+                sum+=speed_pidoutput_filter[i];
+            }
+            Speed_pidoutput=sum/10;
         }
         else
         {
@@ -230,10 +241,22 @@ float Dir_pidoutput=0.0f;
 float w_dir=0.0f;
 void Balance_Dir()
 {
+    mid_err=mid_line[60]-94;
+    /*中线偏差限幅*/
+    if(mid_err>94)
+    {
+        mid_err=94;
+    }
+    else if(mid_err<-94)
+    {
+        mid_err=-94;
+    }
     if(1 == ctrl_dirCtrlEn[0])
     {
-        mid_err=mid_line[60]-94;
-        w_dir=sqrt(imu6050_gyro[2]*imu6050_gyro[2]+imu6050_gyro[0]*imu6050_gyro[0]);
+        if(imu6050_gyro[2]<0)
+            w_dir=sqrt(imu6050_gyro[2]*imu6050_gyro[2]+imu6050_gyro[0]*imu6050_gyro[0])*(3.1415926f)/(180.0f);
+        else
+            w_dir=-sqrt(imu6050_gyro[2]*imu6050_gyro[2]+imu6050_gyro[0]*imu6050_gyro[0])*(3.1415926f)/(180.0f);
         PIDCTRL_ErrUpdate(&Dir_Pid, kp_1*mid_err*speed_avg-w_dir);
         Dir_pidoutput = PIDCTRL_CalcPIDGain(&Dir_Pid);
         if(Dir_pidoutput>30.0f)
@@ -255,23 +278,23 @@ void CTRL_MotorUpdate(float motorL, float motorR)
     /** 左电机满载 **/
     if(motorL > 100.0f)
     {
-        motorR -= (motorL - 100.0f);
+        //motorR -= (motorL - 100.0f);
         motorL = 100.0f;
     }
     if(motorL < -100.0f)
     {
-        motorR -= (motorL + 100.0f);
+        //motorR -= (motorL + 100.0f);
         motorL = -100.0f;
     }
     /** 右电机满载 **/
     if(motorR > 100.0f)
     {
-        motorL -= (motorL - 100.0f);
+        //motorL -= (motorL - 100.0f);
         motorR = 100.0f;
     }
     if(motorR < -100.0f)
     {
-        motorL -= (motorL + 100.0f);
+        //motorL -= (motorL + 100.0f);
         motorR = -100.0f;
     }
     /** 反转保护 **/

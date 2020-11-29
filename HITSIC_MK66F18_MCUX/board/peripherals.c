@@ -1058,7 +1058,7 @@ instance:
     - uartConfig:
       - clockSource: 'BusInterfaceClock'
       - clockSourceFreq: 'GetFreq'
-      - baudRate_Bps: '921600'
+      - baudRate_Bps: '1152000'
       - parityMode: 'kUART_ParityDisabled'
       - stopBitCount: 'kUART_OneStopBit'
       - txFifoWatermark: '0'
