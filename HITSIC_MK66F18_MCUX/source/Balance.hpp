@@ -57,7 +57,6 @@ extern pidCtrl_t Dir_Pid;
 extern float mid_err;
 extern float Dir_pidoutput;
 extern float kp_1;
-//extern float w_set;
-extern float w_dir;
+
 void Balance_Dir();
 #endif /* BALANCE_HPP_ */
