@@ -1,9 +1,15 @@
-#ifndef _IMAGE_H
-#define _IMAGE_H
-#include <stdio.h>
-#include <stdlib.h>
+/*
+ * image.h
+ *
+ *  Created on: 2020年11月16日
+ *      Author: 0
+ */
+
+#ifndef IMAGE_H_
+#define IMAGE_H_
 #include <math.h>
 #include "image.h"
+#include "inc_stdlib.hpp"
 
 #define MISS 255
 #define CAMERA_H  120                            //图片高度
@@ -27,12 +33,11 @@
 
 extern uint8_t IMG[CAMERA_H][CAMERA_W];//二值化后图像数组
 extern uint8_t image_Buffer_0[CAMERA_H][CAMERA_W];
-//extern uint8_t* fullBuffer;//指向灰度图的首地址
+extern uint8_t* fullBuffer;//指向灰度图的首地址
 extern uint8_t mid_line[CAMERA_H];
 extern uint8_t threshold;
 void head_clear(void);
-void Img_Init();
-void THRE(uint8_t* fullBuffer);
+void THRE(void);
 int find_f(int a);
 void search_white_range();
 void find_all_connect();
@@ -43,10 +48,8 @@ void image_main();
 void get_mid_line(void);
 
 void my_memset(uint8_t* ptr, uint8_t num, uint8_t size);
-int Abs(int num);
-void find_rightdown_point(int start_point, int end_point);//寻找右下拐点
-void find_leftdown_point(int start_point, int end_point);//寻找左下拐点
-void find_rightup_point(int start_point, int end_point);
-void find_leftup_point(int start_point, int end_point);
-void regression(int type, int startline, int endline);
-#endif
+
+
+
+
+#endif /* IMAGE_H_ */
