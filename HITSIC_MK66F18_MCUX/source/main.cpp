@@ -198,7 +198,7 @@ void main(void)
             SDK_DelayAtLeastUs(50000, 180000000);
             MENU_Suspend();
             dispBuffer->Clear();
-            uint8_t imageTH=150;
+            uint8_t imageTH=170;
             for (int i = 0; i < cameraCfg.imageRow; i += 2)
             {
                 int16_t imageRow = i >> 1;//除以2 为了加速;
@@ -213,18 +213,23 @@ void main(void)
                 }
              }
             DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
-            DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
-            DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
-            if(GPIO_PinRead(GPIOA,9))
-             {
-                 SDK_DelayAtLeastUs(50000, 180000000);
-                 MENU_Resume();
-                 break;
-             }
+
+
         }
+       else
+         {
+             SDK_DelayAtLeastUs(50000, 180000000);
+             MENU_Resume();
 
-        //SCHOST_ImgUpload(fullBuffer,120,188);
-
+         }
+        SCHOST_ImgUpload(fullBuffer,120,188);
+        DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
+        DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
+//        if(!GPIO_PinRead(GPIOA,15))
+//        {
+//            SDK_DelayAtLeastUs(50000, 180000000);
+//            MENU_Suspend();
+//        }
     }
 }
 

@@ -15,7 +15,7 @@ void Balance_Init()
 {
     balance_angle= pitMgr_t::insert(5U, 4U,Balance_Angle, pitMgr_t::enable);
     assert(balance_angle);
-    balance_speed= pitMgr_t::insert(20U,2U,Balance_Speed, pitMgr_t::enable);
+    balance_speed= pitMgr_t::insert(15U,2U,Balance_Speed, pitMgr_t::enable);
     assert(balance_speed);
     balance_dir=pitMgr_t::insert(5U,3U,Balance_Dir, pitMgr_t::enable);
     assert(balance_dir);
@@ -48,12 +48,12 @@ void Balance_MenuInit(menu_list_t *menuList)
      MENU_ListInsert(menuList, MENU_ItemConstruct(menuType, BalanceMenuList, "Balance", 0, 0));
      {
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(nullType, NULL, "ENB", 0, 0));
-        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &ctrl_angCtrlEn[0], "ang.en", 0U,
-                         menuItem_data_NoSave | menuItem_data_NoLoad | menuItem_dataExt_HasMinMax));
-        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &ctrl_spdCtrlEn[0], "spd.en", 0U,
-                         menuItem_data_NoSave | menuItem_data_NoLoad | menuItem_dataExt_HasMinMax));
-        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &ctrl_dirCtrlEn[0], "dir.en", 0U,
-                        menuItem_data_NoSave | menuItem_data_NoLoad | menuItem_dataExt_HasMinMax));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &ctrl_angCtrlEn[0], "ang.en", 21U,
+                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &ctrl_spdCtrlEn[0], "spd.en", 22U,
+                menuItem_data_region));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(variType, &ctrl_dirCtrlEn[0], "dir.en", 23U,
+                menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(nullType, NULL, "ANG", 0, 0));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Angle_set, "angSet", 9U,
                 menuItem_data_region));
@@ -195,9 +195,9 @@ pidCtrl_t Speed_Pid =
 
 void Balance_Speed()
 {
-        speed_R=-((float)SCFTM_GetSpeed(ENCO_L_PERIPHERAL))/(5729.0*0.02f);
+        speed_R=-((float)SCFTM_GetSpeed(ENCO_L_PERIPHERAL))/(5729.0*0.015f);
         SCFTM_ClearSpeed(ENCO_L_PERIPHERAL);
-        speed_L=((float)SCFTM_GetSpeed(ENCO_R_PERIPHERAL))/(5729.0*0.02f);
+        speed_L=((float)SCFTM_GetSpeed(ENCO_R_PERIPHERAL))/(5729.0*0.015f);
         SCFTM_ClearSpeed(ENCO_R_PERIPHERAL);
         speed_avg=(speed_L+speed_R)/(2.0f);
         PIDCTRL_ErrUpdate(&Speed_Pid, speed_avg - speed_set);
@@ -241,7 +241,7 @@ float Dir_pidoutput=0.0f;
 float w_dir=0.0f;
 void Balance_Dir()
 {
-    mid_err=mid_line[60]-94;
+    mid_err=mid_line[70]-94;
     /*中线偏差限幅*/
     if(mid_err>94)
     {
@@ -253,7 +253,7 @@ void Balance_Dir()
     }
     if(1 == ctrl_dirCtrlEn[0])
     {
-        if(imu6050_gyro[2]<0)
+        if(imu6050_gyro[2]>0)
             w_dir=sqrt(imu6050_gyro[2]*imu6050_gyro[2]+imu6050_gyro[0]*imu6050_gyro[0])*(3.1415926f)/(180.0f);
         else
             w_dir=-sqrt(imu6050_gyro[2]*imu6050_gyro[2]+imu6050_gyro[0]*imu6050_gyro[0])*(3.1415926f)/(180.0f);
@@ -278,23 +278,23 @@ void CTRL_MotorUpdate(float motorL, float motorR)
     /** 左电机满载 **/
     if(motorL > 100.0f)
     {
-        //motorR -= (motorL - 100.0f);
+        motorR -= (motorL - 100.0f);
         motorL = 100.0f;
     }
     if(motorL < -100.0f)
     {
-        //motorR -= (motorL + 100.0f);
+        motorR -= (motorL + 100.0f);
         motorL = -100.0f;
     }
     /** 右电机满载 **/
     if(motorR > 100.0f)
     {
-        //motorL -= (motorL - 100.0f);
+        motorL -= (motorL - 100.0f);
         motorR = 100.0f;
     }
     if(motorR < -100.0f)
     {
-        //motorL -= (motorL + 100.0f);
+        motorL -= (motorL + 100.0f);
         motorR = -100.0f;
     }
     /** 反转保护 **/
@@ -336,3 +336,4 @@ void CTRL_MotorUpdate(float motorL, float motorR)
         SCFTM_PWM_ChangeHiRes(MOTOR_PERIPHERAL, kFTM_Chnl_3, 20000U, -motorR);
     }
 }
+

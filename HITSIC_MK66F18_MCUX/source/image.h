@@ -29,6 +29,7 @@ extern uint8_t IMG[CAMERA_H][CAMERA_W];//二值化后图像数组
 extern uint8_t image_Buffer_0[CAMERA_H][CAMERA_W];
 //extern uint8_t* fullBuffer;//指向灰度图的首地址
 extern uint8_t mid_line[CAMERA_H];
+extern uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 extern uint8_t threshold;
 void head_clear(void);
 void Img_Init();

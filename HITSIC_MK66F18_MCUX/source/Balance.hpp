@@ -40,6 +40,7 @@ extern float Angle_set;
 extern pidCtrl_t Balance_Pid;
 void Balance_Angle();
 void CTRL_MotorUpdate(float motorL, float motorR);
+void PWM(float pwm_L,float pwm_R);
 /*速度环*/
 extern int32_t ctrl_spdCtrlEn[3];
 extern float speed_L,speed_R;//左右轮速度
