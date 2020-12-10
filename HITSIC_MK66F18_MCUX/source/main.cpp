@@ -174,6 +174,10 @@ void main(void)
     //MENU_Resume();
     /** 控制环初始化 */
     //TODO: 在这里初始化控制环
+    SDK_DelayAtLeastUs(50000, 180000000);//延时启动
+    ctrl_angCtrlEn[0]=1;
+    ctrl_spdCtrlEn[0]=1;
+    ctrl_dirCtrlEn[0]=1;
     Balance_Init();
     AngleFilter_Init();
     /** 初始化结束，开启总中断 */
@@ -187,9 +191,6 @@ void main(void)
     while (true)
     {
         //TODO: 在这里添加车模保护代码
-        v[0]=Dir_pidoutput;
-        //v[1]=-w_dir;
-        //SCHOST_VarUpload(v,2);
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
         THRE(fullBuffer);
         image_main();
@@ -222,7 +223,6 @@ void main(void)
              MENU_Resume();
 
          }
-        SCHOST_ImgUpload(fullBuffer,120,188);
         DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
         DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
 //        if(!GPIO_PinRead(GPIOA,15))

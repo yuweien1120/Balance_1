@@ -35,10 +35,11 @@ extern uint8_t IMG[CAMERA_H][CAMERA_W];//二值化后图像数组
 extern uint8_t image_Buffer_0[CAMERA_H][CAMERA_W];
 extern uint8_t* fullBuffer;//指向灰度图的首地址
 extern uint8_t mid_line[CAMERA_H];
+extern uint8_t mid_line_last[CAMERA_H];
 extern uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 extern uint8_t threshold;
 void head_clear(void);
-void THRE(void);
+void THRE(uint8_t* fullBuffer);
 int find_f(int a);
 void search_white_range();
 void find_all_connect();
@@ -49,7 +50,13 @@ void image_main();
 void get_mid_line(void);
 
 void my_memset(uint8_t* ptr, uint8_t num, uint8_t size);
-
+int Abs(int num);
+void find_rightdown_point(int start_point, int end_point);//寻找右下拐点
+void find_leftdown_point(int start_point, int end_point);//寻找左下拐点
+void find_rightup_point(int start_point, int end_point);
+void find_leftup_point(int start_point, int end_point);
+void regression(int type, int startline, int endline);
+int judge(void);//判断此次中线是否符合要求
 
 
 

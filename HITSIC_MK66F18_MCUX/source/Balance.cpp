@@ -13,6 +13,7 @@ pitMgr_t *balance_dir=nullptr;
 /*Balance初始化部分*/
 void Balance_Init()
 {
+
     balance_angle= pitMgr_t::insert(5U, 4U,Balance_Angle, pitMgr_t::enable);
     assert(balance_angle);
     balance_speed= pitMgr_t::insert(15U,2U,Balance_Speed, pitMgr_t::enable);
