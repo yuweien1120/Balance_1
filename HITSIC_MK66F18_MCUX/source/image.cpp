@@ -34,7 +34,7 @@ uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 uint8_t mid_line[CAMERA_H];
 int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
-uint8_t threshold = 170;//阈值
+uint8_t threshold = 160;//阈值
 uint8_t mid_line_last[CAMERA_H];
 //uint8_t* fullBuffer;
 ////////////////////////////////////////////
@@ -443,8 +443,6 @@ void image_main()
         {
             find_rightdown_point(20, 100);
             find_leftdown_point(20, 100);
-//            IMG[r_turn_down[0]][r_turn_down[1]] = green;
-//            IMG[l_turn_down[0]][l_turn_down[1]] = green;
             if (l_turn_down[0] != 0 && r_turn_down[0] != 0)
             {
                 regression(1, l_turn_down[0], l_turn_down[0]+20);
@@ -458,31 +456,6 @@ void image_main()
                     right_line[j] = (int)(parameterB * j + parameterA);
                 }
             }
-//            else if (l_turn_down[0] != 0 && r_turn_down[0] == 0)
-//            {
-//                regression(1, l_turn_down[0], l_turn_down[0] + 20);
-//                //printf("%f\n", parameterB);
-//                if (Abs(parameterB) < 1 && Abs(parameterB) > 0.3)
-//                {
-//                    for (int j = 0; j < l_turn_down[0] + 1; j++)
-//                    {
-//                        left_line[j] = (int)(parameterB * j + parameterA);
-//                    }
-//                }
-//            }
-//            else if (r_turn_down[0] != 0 && l_turn_down[0] == 0)
-//            {
-//                regression(2, r_turn_down[0], r_turn_down[0] + 20);
-//                //printf("%f\n", parameterB);
-//                if (Abs(parameterB) < 1 && Abs(parameterB) > 0.3)
-//                {
-//                    for (int j = 0; j < r_turn_down[0] + 1; j++)
-//                    {
-//                        right_line[j] = (int)(parameterB * j + parameterA);
-//                    }
-//                }
-//
-//            }
             get_mid_line();
             if ((l_turn_down[0] == 0 && r_turn_down[0] != 0) || (r_turn_down[0] == 0 && l_turn_down[0] != 0) || (r_turn_down[0] == 0 && l_turn_down[0] == 0))
             {
@@ -515,11 +488,20 @@ void image_main()
                     }
                 }
             }
-//            for(int i=0;i<=119;i++)
-//            {
-//                mid_line_last[i]=mid_line[i];
-//            }
-
+            if (judge() == 1)
+            {
+                for (int i = 0; i <= 119; i++)
+                {
+                    mid_line_last[i] = mid_line[i];
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= 119; i++)
+                {
+                    mid_line[i] = mid_line_last[i];
+                }
+            }
             crossroad_flag_far = 0;
             r_turn_down[0] = 0;
             r_turn_down[1] = 0;
@@ -546,32 +528,6 @@ void image_main()
                     right_line[j] = (int)(parameterB * j + parameterA);
                 }
             }
-//            else if (l_turn_up[0] != 0 && r_turn_up[0] == 0)
-//            {
-//                regression(1, l_turn_up[0] - 10, l_turn_up[0]);
-//                //printf("%f\n",parameterB);
-//                if (Abs(parameterB) < 1 && Abs(parameterB) > 0.3)
-//                {
-//                    for (int j = l_turn_down[0] + 1; j < 120; j++)
-//                    {
-//                        left_line[j] = (int)(parameterB * j + parameterA);
-//                    }
-//                }
-//
-//            }
-//            else if (l_turn_up[0] == 0 && r_turn_up[0] != 0)
-//            {
-//                regression(2, r_turn_up[0] - 10, r_turn_up[0]);
-//                //printf("%f\n", parameterB);
-//                if (Abs(parameterB) < 1 && Abs(parameterB) > 0.3)
-//                {
-//                    for (int j = r_turn_up[0] + 1; j < 120; j++)
-//                    {
-//                        right_line[j] = (int)(parameterB * j + parameterA);
-//                    }
-//                }
-//
-//            }
             get_mid_line();
             if ((l_turn_up[0] == 0 && r_turn_up[0] != 0 )|| (r_turn_up[0] == 0 && l_turn_up[0] != 0) || (r_turn_up[0] == 0 && l_turn_up[0] == 0))
             {
@@ -606,10 +562,20 @@ void image_main()
                     }
                 }
             }
-//            for(int i=0;i<=119;i++)
-//            {
-//                mid_line_last[i]=mid_line[i];
-//            }
+            if (judge() == 1)
+            {
+                for (int i = 0; i <= 119; i++)
+                {
+                    mid_line_last[i] = mid_line[i];
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= 119; i++)
+                {
+                    mid_line[i] = mid_line_last[i];
+                }
+            }
             crossroad_flag_close = 0;
             r_turn_up[0] = 0;
             r_turn_up[1] = 0;
@@ -619,89 +585,61 @@ void image_main()
         else
         {
             get_mid_line();
-//            for(int i=0;i<=119;i++)
-//            {
-//                mid_line_last[i]=mid_line[i];
-//            }
         }
         midline_duan_flag = 0;
-        get_mid_line();
-        if(judge()==1)
-        {
-            for(int i=0;i<=119;i++)
-            {
-                mid_line_last[i]=mid_line[i];
-            }
-        }
-        else
-        {
-            for(int i=0;i<=119;i++)
-            {
-                mid_line[i]=mid_line_last[i];
-            }
-        }
-        if(crossroad_flag_far!=0 )
-        {
-            regression(0, 20, 100);
-           if (Abs((int)parameterB) < 1)
-           {
-               for (int j = 0; j < 100; j++)
-               {
-                   mid_line[j] = (int)(parameterB * j + parameterA);
-               }
-               //printf("%f\n", parameterB);
-               if(judge()==1)
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line_last[i]=mid_line[i];
-                   }
-               }
-               else
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line[i]=mid_line_last[i];
-                   }
-               }
-           }
-           //mid_line[60] =94;
-        }
-        else if(crossroad_flag_close!=0)
-        {
-            regression(0, 20, 100);
-            if (Abs((int)parameterB) < 1)
-           {
-               for (int j = 0; j < 100; j++)
-               {
-                   mid_line[j] = (int)(parameterB * j + parameterA);
-               }
-               //printf("%f\n", parameterB);
-               if(judge()==1)
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line_last[i]=mid_line[i];
-                   }
-               }
-               else
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line[i]=mid_line_last[i];
-                   }
-               }
-           }
-            //mid_line[60] =94;
-        }
-        //printf("%f\n", parameterB);
+//        if(crossroad_flag_far!=0 )
+//        {
+//            regression(0, 20, 100);
+//           if (Abs((int)parameterB) < 1)
+//           {
+//               for (int j = 0; j < 100; j++)
+//               {
+//                   mid_line[j] = (int)(parameterB * j + parameterA);
+//               }
+//               if(judge()==1)
+//               {
+//                   for(int i=0;i<=119;i++)
+//                   {
+//                       mid_line_last[i]=mid_line[i];
+//                   }
+//               }
+//               else
+//               {
+//                   for(int i=0;i<=119;i++)
+//                   {
+//                       mid_line[i]=mid_line_last[i];
+//                   }
+//               }
+//           }
+//        }
+//        else if(crossroad_flag_close!=0)
+//        {
+//            regression(0, 20, 100);
+//            if (Abs((int)parameterB) < 1)
+//           {
+//               for (int j = 0; j < 100; j++)
+//               {
+//                   mid_line[j] = (int)(parameterB * j + parameterA);
+//               }
+//               if(judge()==1)
+//               {
+//                   for(int i=0;i<=119;i++)
+//                   {
+//                       mid_line_last[i]=mid_line[i];
+//                   }
+//               }
+//               else
+//               {
+//                   for(int i=0;i<=119;i++)
+//                   {
+//                       mid_line[i]=mid_line_last[i];
+//                   }
+//               }
+//           }
+//        }
         for (int i = NEAR_LINE; i >= FAR_LINE; i--)
             if (mid_line[i] != MISS)
                 IMG[i][mid_line[i]] = red;
-    /*for (int i = NEAR_LINE; i >= FAR_LINE; i--)
-        for(int j = my_road[i].connected->left;j <= my_road[i].connected->right;j++)
-            IMG[i][j] = green;*/
-
 }
 /*绝对值*/
 int Abs(int num)

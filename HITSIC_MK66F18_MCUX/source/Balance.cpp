@@ -82,6 +82,8 @@ void Balance_MenuInit(menu_list_t *menuList)
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Speed_pidoutput, "spd.out", 0U,
                         menuItem_data_NoSave | menuItem_data_NoLoad));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(nullType, NULL, "DIR", 0, 0));
+        MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &threshold, "thr", 21U,
+                                menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &kp_1, "kp_1", 17U,
                                 menuItem_data_region));
         MENU_ListInsert(BalanceMenuList, MENU_ItemConstruct(varfType, &Dir_Pid.kp, "dir.kp", 18U,
