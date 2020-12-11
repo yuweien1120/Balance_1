@@ -225,11 +225,6 @@ void main(void)
          }
         DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
         DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
-//        if(!GPIO_PinRead(GPIOA,15))
-//        {
-//            SDK_DelayAtLeastUs(50000, 180000000);
-//            MENU_Suspend();
-//        }
     }
 }
 
