@@ -52,13 +52,13 @@ void image_main();
 void get_mid_line(void);
 
 void my_memset(uint8_t* ptr, uint8_t num, uint8_t size);
-//int Abs(int num);
-//void find_rightdown_point(int start_point, int end_point);//寻找右下拐点
-//void find_leftdown_point(int start_point, int end_point);//寻找左下拐点
-//void find_rightup_point(int start_point, int end_point);
-//void find_leftup_point(int start_point, int end_point);
-//void regression(int type, int startline, int endline);
-//int judge(void);//判断此次中线是否符合要求
+int Abs(int num);
+void find_rightdown_point(int start_point, int end_point);//寻找右下拐点
+void find_leftdown_point(int start_point, int end_point);//寻找左下拐点
+void find_rightup_point(int start_point, int end_point);
+void find_leftup_point(int start_point, int end_point);
+void regression(int type, int startline, int endline);
+int judge(void);//判断此次中线是否符合要求
 void banmaxian(void);
 
 
