@@ -1,4 +1,5 @@
 #include "image.h"
+#include "Balance.hpp"
 
 int f[10 * CAMERA_H];//考察连通域联通性
 //每个白条子属性
@@ -425,19 +426,46 @@ void image_main()
         find_road();
         /*到此处为止，我们已经得到了属于赛道的结构体数组my_road[CAMERA_H]*/
         ordinary_two_line();
-        for (int j = 90; j > 0; j--)//粗略的十字路口判断
-        {
-            if (((right_line[j] - left_line[j]) - (right_line[j + 1] - left_line[j + 1])) > 20 )
-            {
-                crossroad_flag_far++;
-                break;
-            }
-            else if (((right_line[j] - left_line[j]) - (right_line[j + 1] - left_line[j + 1])) < -20 )
-            {
-                crossroad_flag_close++;
-                break;
-            }
-        }
+        for (int j = 90; j > 20; j--)//粗略的十字路口判断
+           {
+               if (right_line[j] != MISS && left_line[j] != MISS)
+               {
+                   if (((right_line[j] - left_line[j]) - (right_line[j - 25] - left_line[j - 25])) < -20 && (right_line[j]- right_line[j - 25])<-2&& (left_line[j]- left_line[j - 25])>2)
+                   {
+                       int flag = 0;
+                       for (j = 0; j <= 187; j++)
+                       {
+                           if (IMG[0][j] == white)
+                           {
+                               flag = 1;
+                           }
+                       }
+                       if (flag == 1)
+                       {
+                           crossroad_flag_far++;
+                           //printf("%d", 1);
+                       }
+                       break;
+                   }
+                   else if (((right_line[j] - left_line[j]) - (right_line[j - 10] - left_line[j - 10])) > 20 && (right_line[j] - right_line[j - 10]) > 2 && (left_line[j] - left_line[j - 10]) < -2)
+                   {
+                       int flag = 0;
+                       for (j = 0; j <= 187; j++)
+                       {
+                           if (IMG[0][j] == white )
+                           {
+                               flag = 1;
+                           }
+                       }
+                       if (flag == 1)
+                       {
+                           crossroad_flag_close++;
+                           //printf("%d", 2);
+                       }
+                       break;
+                   }
+               }
+           }
         //还未进入十字
         if (crossroad_flag_far != 0)
         {
@@ -637,9 +665,9 @@ void image_main()
 //               }
 //           }
 //        }
-        for (int i = NEAR_LINE; i >= FAR_LINE; i--)
-            if (mid_line[i] != MISS)
-                IMG[i][mid_line[i]] = red;
+//        for (int i = NEAR_LINE; i >= FAR_LINE; i--)
+//            if (mid_line[i] != MISS)
+//                IMG[i][mid_line[i]] = red;
 }
 /*绝对值*/
 int Abs(int num)
@@ -801,4 +829,27 @@ int judge(void)
         }
     }
     return flag;
+}
+
+void banmaxian(void)
+{
+    int diff;
+    for (int j = 20; j < 168; j++)
+    {
+        if (IMG[60][j] == white && IMG[60][j + 1] == black)
+        {
+            num[1]++;
+        }
+    }
+    diff =  num[0] - num[1];
+    if (diff > 7)
+    {
+        cishu++;
+    }
+    num[0] = num[1];
+    num[1] = 0;
+    if (cishu >= 2)
+    {
+        ctrl_angCtrlEn[0] = 0;
+    }
 }
