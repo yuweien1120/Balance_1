@@ -494,6 +494,7 @@ void banmaxian(void)
     }
     if(stop_flag==4)
     {
+        SDK_DelayAtLeastUs(50000, 180000000);
         ctrl_angCtrlEn[0]=0;
     }
     stop_num[0] = 0;
