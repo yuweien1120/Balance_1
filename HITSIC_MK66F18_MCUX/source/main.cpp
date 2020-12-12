@@ -174,14 +174,22 @@ void main(void)
     //MENU_Resume();
     /** 控制环初始化 */
     //TODO: 在这里初始化控制环
-    SDK_DelayAtLeastUs(50000, 180000000);//延时启动
+
+    Balance_Init();
+    AngleFilter_Init();
+
+    /** 初始化结束，开启总中断 */
+    HAL_ExitCritical();
+
+    /**延时发车**/
+    SDK_DelayAtLeastUs(1000000, 180000000);//延时启动
+    ctrl_angCtrlEn[0]=1;
+    ctrl_spdCtrlEn[0]=0;
+    ctrl_dirCtrlEn[0]=0;
+    SDK_DelayAtLeastUs(3000000, 180000000);
     ctrl_angCtrlEn[0]=1;
     ctrl_spdCtrlEn[0]=1;
     ctrl_dirCtrlEn[0]=1;
-    Balance_Init();
-    AngleFilter_Init();
-    /** 初始化结束，开启总中断 */
-    HAL_ExitCritical();
 
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
