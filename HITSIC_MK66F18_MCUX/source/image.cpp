@@ -498,37 +498,6 @@ void image_main()
                 }
             }
             get_mid_line();
-            if ((l_turn_down[0] == 0 && r_turn_down[0] != 0) || (r_turn_down[0] == 0 && l_turn_down[0] != 0) || (r_turn_down[0] == 0 && l_turn_down[0] == 0))
-            {
-                for (int j = 3; j < 100; j++)
-                {
-                    if (Abs(mid_line[j] - mid_line[j - 1]) > 1)
-                    {
-                        midline_duan_flag=j;
-                        //break;
-                    }
-                }
-                if (midline_duan_flag != 0)
-                {
-                    regression(0, midline_duan_flag, midline_duan_flag + 10);
-                    if (Abs(parameterB) < 1 )
-                    {
-                        for (int j = 0; j < midline_duan_flag + 1; j++)
-                        {
-                            mid_line[j] = (int)(parameterB * j + parameterA);
-                        }
-                    }
-                    regression(0, 60, 90);
-                    if (Abs((int)parameterB) < 0.5)
-                    {
-                        for (int j = 0; j < 100; j++)
-                        {
-                            mid_line[j] = (int)(parameterB * j + parameterA);
-                        }
-                        printf("%f\n", parameterB);
-                    }
-                }
-            }
             if (judge() == 1)
             {
                 for (int i = 0; i <= 119; i++)
@@ -570,39 +539,6 @@ void image_main()
                 }
             }
             get_mid_line();
-            if ((l_turn_up[0] == 0 && r_turn_up[0] != 0 )|| (r_turn_up[0] == 0 && l_turn_up[0] != 0) || (r_turn_up[0] == 0 && l_turn_up[0] == 0))
-            {
-                for (int j = 10; j < 100; j++)
-                {
-                    if (Abs(mid_line[j] - mid_line[j - 1]) > 1)
-                    {
-                        midline_duan_flag = j;
-                        //break;
-                    }
-                }
-                if (midline_duan_flag != 0)
-                {
-                    regression(0, midline_duan_flag-10, midline_duan_flag);
-                    if (Abs(parameterB) < 1 )
-                    {
-                        for (int j = midline_duan_flag + 1; j < 120; j++)
-                        {
-                            mid_line[j] = (int)(parameterB * j + parameterA);
-                        }
-
-
-                    }
-                    regression(0, 60, 90);
-                    if (Abs((int)parameterB) < 0.5)
-                    {
-                        for (int j = 0; j < 100; j++)
-                        {
-                            mid_line[j] = (int)(parameterB * j + parameterA);
-                        }
-                        printf("%f\n", parameterB);
-                    }
-                }
-            }
             if (judge() == 1)
             {
                 for (int i = 0; i <= 119; i++)
@@ -628,56 +564,6 @@ void image_main()
             get_mid_line();
         }
         midline_duan_flag = 0;
-        if(crossroad_flag_far!=0 )
-        {
-            regression(0, 20, 100);
-           if (Abs((int)parameterB) < 1)
-           {
-               for (int j = 0; j < 100; j++)
-               {
-                   mid_line[j] = (int)(parameterB * j + parameterA);
-               }
-               if(judge()==1)
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line_last[i]=mid_line[i];
-                   }
-               }
-               else
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line[i]=mid_line_last[i];
-                   }
-               }
-           }
-        }
-        else if(crossroad_flag_close!=0)
-        {
-            regression(0, 20, 100);
-            if (Abs((int)parameterB) < 1)
-           {
-               for (int j = 0; j < 100; j++)
-               {
-                   mid_line[j] = (int)(parameterB * j + parameterA);
-               }
-               if(judge()==1)
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line_last[i]=mid_line[i];
-                   }
-               }
-               else
-               {
-                   for(int i=0;i<=119;i++)
-                   {
-                       mid_line[i]=mid_line_last[i];
-                   }
-               }
-           }
-        }
         for (int i = NEAR_LINE; i >= FAR_LINE; i--)
             if (mid_line[i] != MISS)
                 IMG[i][mid_line[i]] = red;
