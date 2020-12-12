@@ -444,7 +444,7 @@ void image_main()
                                times++;
                            }
                        }
-                       if (times < 20)
+                       if (times < 30)
                        {
                            flag = 1;
                        }
@@ -465,7 +465,7 @@ void image_main()
                                times++;
                            }
                        }
-                       if (times < 20)
+                       if (times < 30)
                        {
                            flag = 1;
                        }
