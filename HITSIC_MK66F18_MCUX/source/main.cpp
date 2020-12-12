@@ -204,7 +204,7 @@ void main(void)
         image_main();
         if(stop_flag==4)
         {
-            SDK_DelayAtLeastUs(1000000, 180000000);
+            SDK_DelayAtLeastUs(2000000, 180000000);
             ctrl_angCtrlEn[0]=0;
         }
         if(!GPIO_PinRead(GPIOA,9))
