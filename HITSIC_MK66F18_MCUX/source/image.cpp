@@ -35,7 +35,7 @@ uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 uint8_t mid_line[CAMERA_H];
 int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
-uint8_t threshold = 150;//阈值
+uint8_t threshold = 155;//阈值
 uint8_t mid_line_last[CAMERA_H];
 uint8_t stop_num[2]={0,0};
 uint8_t stop_cishu=0;
@@ -521,8 +521,6 @@ void image_main()
         {
             find_rightup_point(10, 90);
             find_leftup_point(10, 90);
-            IMG[r_turn_up[0]][r_turn_up[1]] = green;
-            IMG[l_turn_up[0]][l_turn_up[1]] = green;
             if (l_turn_up[0] != 0 && r_turn_up[0] != 0)
             {
                 regression(1, l_turn_up[0]-10, l_turn_up[0]);
@@ -562,9 +560,6 @@ void image_main()
             get_mid_line();
         }
         midline_duan_flag = 0;
-        for (int i = NEAR_LINE; i >= FAR_LINE; i--)
-            if (mid_line[i] != MISS)
-                IMG[i][mid_line[i]] = red;
 }
 /*绝对值*/
 int Abs(int num)

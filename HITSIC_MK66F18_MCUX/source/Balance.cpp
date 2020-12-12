@@ -248,13 +248,13 @@ void Balance_Dir()
 {
     mid_err=mid_line[60]-94;
     /*中线偏差限幅*/
-    if(mid_err>94)
+    if(mid_err>60)
     {
-        mid_err=94;
+        mid_err=60;
     }
-    else if(mid_err<-94)
+    else if(mid_err<-60)
     {
-        mid_err=-94;
+        mid_err=-60;
     }
     if(1 == ctrl_dirCtrlEn[0])
     {
