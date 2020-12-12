@@ -246,7 +246,7 @@ float Dir_pidoutput=0.0f;
 float w_dir=0.0f;
 void Balance_Dir()
 {
-    mid_err=mid_line[55]-94;
+    mid_err=mid_line[60]-94;
     /*中线偏差限幅*/
     if(mid_err>94)
     {
