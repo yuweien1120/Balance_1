@@ -194,6 +194,11 @@ void main(void)
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
         THRE(fullBuffer);
         image_main();
+        if(stop_flag==4)
+        {
+            SDK_DelayAtLeastUs(1000000, 180000000);
+            ctrl_angCtrlEn[0]=0;
+        }
         if(!GPIO_PinRead(GPIOA,9))
         {
             SDK_DelayAtLeastUs(50000, 180000000);

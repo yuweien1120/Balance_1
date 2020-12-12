@@ -1,6 +1,6 @@
 #include "image.h"
 #include "Balance.hpp"
-
+#include "fsl_common.h"
 int f[10 * CAMERA_H];//考察连通域联通性
 //每个白条子属性
 typedef struct {
@@ -491,11 +491,6 @@ void banmaxian(void)
         {
             stop_flag=4;
         }
-    }
-    if(stop_flag==4)
-    {
-        SDK_DelayAtLeastUs(50000, 180000000);
-        ctrl_angCtrlEn[0]=0;
     }
     stop_num[0] = 0;
     stop_num[1] = 0;
