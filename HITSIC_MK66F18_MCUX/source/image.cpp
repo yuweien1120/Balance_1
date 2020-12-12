@@ -429,299 +429,264 @@ void image_main()
         /*到此处为止，我们已经得到了属于赛道的结构体数组my_road[CAMERA_H]*/
         ordinary_two_line();
         banmaxian();
-        for (int j = 90; j > 20; j--)//粗略的十字路口判断
-           {
-               if (right_line[j] != MISS && left_line[j] != MISS)
-               {
-                   if (((right_line[j] - left_line[j]) - (right_line[j - 25] - left_line[j - 25])) < -20 && (right_line[j]- right_line[j - 25])<-2&& (left_line[j]- left_line[j - 25])>2)
-                   {
-                       int flag = 0;
-                       int times = 0;
-                       for (int i = 0; i <= 40; i++)
-                       {
-                           if (IMG[i][94] == black)
-                           {
-                               times++;
-                           }
-                       }
-                       if (times < 30)
-                       {
-                           flag = 1;
-                       }
-                       if (flag == 1)
-                       {
-                           crossroad_flag_far++;
-                       }
-                       break;
-                   }
-                   else if (((right_line[j] - left_line[j]) - (right_line[j - 10] - left_line[j - 10])) > 20 && (right_line[j] - right_line[j - 10]) > 2 && (left_line[j] - left_line[j - 10]) < -2)
-                   {
-                       int flag = 0;
-                       int times = 0;
-                       for (int i = 0; i <= 40; i++)
-                       {
-                           if (IMG[i][94] == black )
-                           {
-                               times++;
-                           }
-                       }
-                       if (times < 30)
-                       {
-                           flag = 1;
-                       }
-                       if (flag == 1)
-                       {
-                           crossroad_flag_close++;
-                       }
-                       break;
-                   }
-               }
-           }
-        //还未进入十字
-        if (crossroad_flag_far != 0)
-        {
-            find_rightdown_point(20, 100);
-            find_leftdown_point(20, 100);
-            if (l_turn_down[0] != 0 && r_turn_down[0] != 0)
-            {
-                regression(1, l_turn_down[0], l_turn_down[0]+20);
-                for (int j = 0; j < l_turn_down[0]+1; j++)
-                {
-                    left_line[j] = (int)(parameterB * j + parameterA);
-                }
-                regression(2, r_turn_down[0], r_turn_down[0]+20);
-                for (int j = 0; j < r_turn_down[0]+1; j++)
-                {
-                    right_line[j] = (int)(parameterB * j + parameterA);
-                }
-            }
+//        for (int j = 90; j > 20; j--)//粗略的十字路口判断
+//           {
+//            if (((right_line[j] - left_line[j]) - (right_line[j - 25] - left_line[j - 25])) < -20 && (right_line[j]- right_line[j - 25])<-2&& (left_line[j]- left_line[j - 25])>2)
+//               {
+//                   crossroad_flag_far++;
+//                   break;
+//               }
+//            else if (((right_line[j] - left_line[j]) - (right_line[j - 10] - left_line[j - 10])) > 20 && (right_line[j] - right_line[j - 10]) > 2 && (left_line[j] - left_line[j - 10]) < -2)
+//               {
+//                   crossroad_flag_close++;
+//                   break;
+//               }
+//           }
+//        //还未进入十字
+//        if (crossroad_flag_far != 0)
+//        {
+//            find_rightdown_point(20, 100);
+//            find_leftdown_point(20, 100);
+//            if (l_turn_down[0] != 0 && r_turn_down[0] != 0)
+//            {
+//                regression(1, l_turn_down[0], l_turn_down[0]+20);
+//                for (int j = 0; j < l_turn_down[0]+1; j++)
+//                {
+//                    left_line[j] = (int)(parameterB * j + parameterA);
+//                }
+//                regression(2, r_turn_down[0], r_turn_down[0]+20);
+//                for (int j = 0; j < r_turn_down[0]+1; j++)
+//                {
+//                    right_line[j] = (int)(parameterB * j + parameterA);
+//                }
+//            }
+//            get_mid_line();
+//            if (judge() == 1)
+//            {
+//                for (int i = 0; i <= 119; i++)
+//                {
+//                    mid_line_last[i] = mid_line[i];
+//                }
+//            }
+//            else
+//            {
+//                for (int i = 0; i <= 119; i++)
+//                {
+//                    mid_line[i] = mid_line_last[i];
+//                }
+//            }
+//            crossroad_flag_far = 0;
+//            r_turn_down[0] = 0;
+//            r_turn_down[1] = 0;
+//            l_turn_down[0] = 0;
+//            l_turn_down[1] = 0;
+//        }
+//        //已经进入十字
+//        else if (crossroad_flag_close!=0)
+//        {
+//            find_rightup_point(10, 90);
+//            find_leftup_point(10, 90);
+//            if (l_turn_up[0] != 0 && r_turn_up[0] != 0)
+//            {
+//                regression(1, l_turn_up[0]-10, l_turn_up[0]);
+//                for (int j =l_turn_down[0] + 1 ; j <120; j++)
+//                {
+//                    left_line[j] = (int)(parameterB * j + parameterA);
+//                }
+//                regression(2, r_turn_up[0]-10, r_turn_up[0]);
+//                for (int j =r_turn_up[0] + 1 ; j <120; j++)
+//                {
+//                    right_line[j] = (int)(parameterB * j + parameterA);
+//                }
+//            }
+//            get_mid_line();
+//            if (judge() == 1)
+//            {
+//                for (int i = 0; i <= 119; i++)
+//                {
+//                    mid_line_last[i] = mid_line[i];
+//                }
+//            }
+//            else
+//            {
+//                for (int i = 0; i <= 119; i++)
+//                {
+//                    mid_line[i] = mid_line_last[i];
+//                }
+//            }
+//            crossroad_flag_close = 0;
+//            r_turn_up[0] = 0;
+//            r_turn_up[1] = 0;
+//            l_turn_up[0] = 0;
+//            l_turn_up[1] = 0;
+//        }
+//        else
+//        {
             get_mid_line();
-            if (judge() == 1)
-            {
-                for (int i = 0; i <= 119; i++)
-                {
-                    mid_line_last[i] = mid_line[i];
-                }
-            }
-            else
-            {
-                for (int i = 0; i <= 119; i++)
-                {
-                    mid_line[i] = mid_line_last[i];
-                }
-            }
-            crossroad_flag_far = 0;
-            r_turn_down[0] = 0;
-            r_turn_down[1] = 0;
-            l_turn_down[0] = 0;
-            l_turn_down[1] = 0;
-        }
-        //已经进入十字
-        else if (crossroad_flag_close!=0)
-        {
-            find_rightup_point(10, 90);
-            find_leftup_point(10, 90);
-            if (l_turn_up[0] != 0 && r_turn_up[0] != 0)
-            {
-                regression(1, l_turn_up[0]-10, l_turn_up[0]);
-                for (int j =l_turn_down[0] + 1 ; j <120; j++)
-                {
-                    left_line[j] = (int)(parameterB * j + parameterA);
-                }
-                regression(2, r_turn_up[0]-10, r_turn_up[0]);
-                for (int j =r_turn_up[0] + 1 ; j <120; j++)
-                {
-                    right_line[j] = (int)(parameterB * j + parameterA);
-                }
-            }
-            get_mid_line();
-            if (judge() == 1)
-            {
-                for (int i = 0; i <= 119; i++)
-                {
-                    mid_line_last[i] = mid_line[i];
-                }
-            }
-            else
-            {
-                for (int i = 0; i <= 119; i++)
-                {
-                    mid_line[i] = mid_line_last[i];
-                }
-            }
-            crossroad_flag_close = 0;
-            r_turn_up[0] = 0;
-            r_turn_up[1] = 0;
-            l_turn_up[0] = 0;
-            l_turn_up[1] = 0;
-        }
-        else
-        {
-            get_mid_line();
-        }
-        midline_duan_flag = 0;
+//        }
+//        midline_duan_flag = 0;
 }
 /*绝对值*/
-int Abs(int num)
-{
-    if (num < 0)
-        num = -num;
-    return num;
-}
-/*寻找下方拐点*/
-void find_rightdown_point(int start_point,int end_point)
-{
-    find_rightdown_flag = 0;
-    for (int j = start_point; j <= end_point; j++)
-    {
-        if (Abs(right_line[j + 1] - right_line[j + 2]) <= 2 && Abs(right_line[j] - right_line[j + 1]) <= 2 &&  (right_line[j]- right_line[j-1])<-3
-            && (right_line[j] - right_line[j - 2]) < -3 && (right_line[j] - right_line[j + 3])<0 && (right_line[j] - right_line[j - 3])<0)//前面判断连续性,后面判断是否为拐点
-        {
-            r_turn_down[0] = j;//数组里面没有第0行
-            r_turn_down[1] = right_line[j];
-            find_rightdown_flag = 1;
-            break;
-        }
-    }
-}
-void find_leftdown_point(int start_point, int end_point)
-{
-    find_leftdown_flag = 0;
-    for (int j = start_point; j <= end_point; j++)
-    {
-        if (Abs(left_line[j + 1] - left_line[j + 2]) <= 2 && Abs(left_line[j] - left_line[j + 1]) <= 2 && (left_line[j] - left_line[j - 1]) > 3
-            && (left_line[j] - left_line[j - 2]) > 3 && (left_line[j] - left_line[j + 3]) > 0 && (left_line[j] - left_line[j - 3]) > 0)//前面判断连续性,后面判断是否为拐点
-        {
-            l_turn_down[0] = j;//数组里面没有第0行
-            l_turn_down[1] = left_line[j];
-            find_leftdown_flag = 1;
-            break;
-        }
-    }
-}
-/*寻找上方拐点*/
-void find_rightup_point(int start_point, int end_point)
-{
-    find_rightup_flag = 0;
-    for (int j = start_point; j <= end_point; j++)
-    {
-        if (Abs(right_line[j - 1] - right_line[j - 2]) <= 2 && Abs(right_line[j] - right_line[j - 1]) <= 2 && (right_line[j] - right_line[j + 1]) < -3
-            && (right_line[j] - right_line[j + 2]) < -3 && (right_line[j] - right_line[j + 3]) < 0 && (right_line[j] - right_line[j - 3]) > 0)//前面判断连续性,后面判断是否为拐点
-        {
-            r_turn_up[0] = j;//数组里面没有第0行
-            r_turn_up[1] = right_line[j];
-            find_rightup_flag = 1;
-            break;
-        }
-    }
-}
-void find_leftup_point(int start_point, int end_point)
-{
-    find_leftup_flag = 0;
-    for (int j = start_point; j <= end_point; j++)
-    {
-        if (Abs(left_line[j - 1] - left_line[j - 2]) <= 2 && Abs(left_line[j] - left_line[j - 1]) <= 2 && (left_line[j] - left_line[j + 1]) > 3
-            && (left_line[j] - left_line[j + 2]) > 3 && (left_line[j] - left_line[j + 3]) > 0 && (left_line[j] - left_line[j - 3]) < 0)//前面判断连续性,后面判断是否为拐点
-        {
-            l_turn_up[0] = j;//数组里面没有第0行
-            l_turn_up[1] = left_line[j];
-            find_leftup_flag = 1;
-            break;
-        }
-    }
-}
-/*线性拟合*/
-void regression(int type, int startline, int endline)
-{
-    int i = 0;
-    int sumlines = endline - startline;
-    int sumX = 0;
-    int sumY = 0;
-    float averageX = 0;
-    float averageY = 0;
-    float sumUp = 0;
-    float sumDown = 0;
-    if (type == 0)      //拟合中线
-    {
-        for (i = startline; i < endline; i++)
-        {
-            sumX += i;
-            sumY += mid_line[i];
-        }
-        if (sumlines != 0)
-        {
-            averageX = sumX / sumlines;     //x的平均值
-            averageY = sumY / sumlines;     //y的平均值
-        }
-        else
-        {
-            averageX = 0;     //x的平均值
-            averageY = 0;     //y的平均值
-        }
-        for (i = startline; i < endline; i++)
-        {
-            sumUp += (mid_line[i] - averageY) * (i - averageX);
-            sumDown += (i - averageX) * (i - averageX);
-        }
-        if (sumDown == 0) parameterB = 0;
-        else parameterB = sumUp / sumDown;
-        parameterA = averageY - parameterB * averageX;
-    }
-    else if (type == 1)//拟合左线
-    {
-        for (i = startline; i < endline; i++)
-        {
-            sumX += i;
-            sumY += left_line[i];
-        }
-        if (sumlines == 0) sumlines = 1;
-        averageX = sumX / sumlines;     //x的平均值
-        averageY = sumY / sumlines;     //y的平均值
-        for (i = startline; i < endline; i++)
-        {
-            //SetText("lefetline"+i+" " +lefetline[i] + " averageY" +" "+ averageY);
-            sumUp += (left_line[i] - averageY) * (i - averageX);
-            sumDown += (i - averageX) * (i - averageX);
-        }
-        if (sumDown == 0) parameterB = 0;
-        else parameterB = sumUp / sumDown;
-        parameterA = averageY - parameterB * averageX;
-    }
-    else if (type == 2)//拟合右线
-    {
-        for (i = startline; i < endline; i++)
-        {
-            sumX += i;
-            sumY += right_line[i];
-        }
-        if (sumlines == 0) sumlines = 1;
-        averageX = sumX / sumlines;     //x的平均值
-        averageY = sumY / sumlines;     //y的平均值
-        for (i = startline; i < endline; i++)
-        {
-            sumUp += (right_line[i] - averageY) * (i - averageX);
-            sumDown += (i - averageX) * (i - averageX);
-        }
-        if (sumDown == 0) parameterB = 0;
-        else parameterB = sumUp / sumDown;
-        parameterA = averageY - parameterB * averageX;
-
-    }
-}
-
-int judge(void)
-{
-    int flag=1;//0 no;1 yes
-    for(int i=30;i<=100;i++)
-    {
-        if(Abs(mid_line[i]-mid_line[i+1])>=3)
-        {
-            flag=0;
-            break;
-        }
-    }
-    return flag;
-}
+//int Abs(int num)
+//{
+//    if (num < 0)
+//        num = -num;
+//    return num;
+//}
+///*寻找下方拐点*/
+//void find_rightdown_point(int start_point,int end_point)
+//{
+//    find_rightdown_flag = 0;
+//    for (int j = start_point; j <= end_point; j++)
+//    {
+//        if (Abs(right_line[j + 1] - right_line[j + 2]) <= 2 && Abs(right_line[j] - right_line[j + 1]) <= 2 &&  (right_line[j]- right_line[j-1])<-3
+//            && (right_line[j] - right_line[j - 2]) < -3 && (right_line[j] - right_line[j + 3])<0 && (right_line[j] - right_line[j - 3])<0)//前面判断连续性,后面判断是否为拐点
+//        {
+//            r_turn_down[0] = j;//数组里面没有第0行
+//            r_turn_down[1] = right_line[j];
+//            find_rightdown_flag = 1;
+//            break;
+//        }
+//    }
+//}
+//void find_leftdown_point(int start_point, int end_point)
+//{
+//    find_leftdown_flag = 0;
+//    for (int j = start_point; j <= end_point; j++)
+//    {
+//        if (Abs(left_line[j + 1] - left_line[j + 2]) <= 2 && Abs(left_line[j] - left_line[j + 1]) <= 2 && (left_line[j] - left_line[j - 1]) > 3
+//            && (left_line[j] - left_line[j - 2]) > 3 && (left_line[j] - left_line[j + 3]) > 0 && (left_line[j] - left_line[j - 3]) > 0)//前面判断连续性,后面判断是否为拐点
+//        {
+//            l_turn_down[0] = j;//数组里面没有第0行
+//            l_turn_down[1] = left_line[j];
+//            find_leftdown_flag = 1;
+//            break;
+//        }
+//    }
+//}
+///*寻找上方拐点*/
+//void find_rightup_point(int start_point, int end_point)
+//{
+//    find_rightup_flag = 0;
+//    for (int j = start_point; j <= end_point; j++)
+//    {
+//        if (Abs(right_line[j - 1] - right_line[j - 2]) <= 2 && Abs(right_line[j] - right_line[j - 1]) <= 2 && (right_line[j] - right_line[j + 1]) < -3
+//            && (right_line[j] - right_line[j + 2]) < -3 && (right_line[j] - right_line[j + 3]) < 0 && (right_line[j] - right_line[j - 3]) > 0)//前面判断连续性,后面判断是否为拐点
+//        {
+//            r_turn_up[0] = j;//数组里面没有第0行
+//            r_turn_up[1] = right_line[j];
+//            find_rightup_flag = 1;
+//            break;
+//        }
+//    }
+//}
+//void find_leftup_point(int start_point, int end_point)
+//{
+//    find_leftup_flag = 0;
+//    for (int j = start_point; j <= end_point; j++)
+//    {
+//        if (Abs(left_line[j - 1] - left_line[j - 2]) <= 2 && Abs(left_line[j] - left_line[j - 1]) <= 2 && (left_line[j] - left_line[j + 1]) > 3
+//            && (left_line[j] - left_line[j + 2]) > 3 && (left_line[j] - left_line[j + 3]) > 0 && (left_line[j] - left_line[j - 3]) < 0)//前面判断连续性,后面判断是否为拐点
+//        {
+//            l_turn_up[0] = j;//数组里面没有第0行
+//            l_turn_up[1] = left_line[j];
+//            find_leftup_flag = 1;
+//            break;
+//        }
+//    }
+//}
+///*线性拟合*/
+//void regression(int type, int startline, int endline)
+//{
+//    int i = 0;
+//    int sumlines = endline - startline;
+//    int sumX = 0;
+//    int sumY = 0;
+//    float averageX = 0;
+//    float averageY = 0;
+//    float sumUp = 0;
+//    float sumDown = 0;
+//    if (type == 0)      //拟合中线
+//    {
+//        for (i = startline; i < endline; i++)
+//        {
+//            sumX += i;
+//            sumY += mid_line[i];
+//        }
+//        if (sumlines != 0)
+//        {
+//            averageX = sumX / sumlines;     //x的平均值
+//            averageY = sumY / sumlines;     //y的平均值
+//        }
+//        else
+//        {
+//            averageX = 0;     //x的平均值
+//            averageY = 0;     //y的平均值
+//        }
+//        for (i = startline; i < endline; i++)
+//        {
+//            sumUp += (mid_line[i] - averageY) * (i - averageX);
+//            sumDown += (i - averageX) * (i - averageX);
+//        }
+//        if (sumDown == 0) parameterB = 0;
+//        else parameterB = sumUp / sumDown;
+//        parameterA = averageY - parameterB * averageX;
+//    }
+//    else if (type == 1)//拟合左线
+//    {
+//        for (i = startline; i < endline; i++)
+//        {
+//            sumX += i;
+//            sumY += left_line[i];
+//        }
+//        if (sumlines == 0) sumlines = 1;
+//        averageX = sumX / sumlines;     //x的平均值
+//        averageY = sumY / sumlines;     //y的平均值
+//        for (i = startline; i < endline; i++)
+//        {
+//            //SetText("lefetline"+i+" " +lefetline[i] + " averageY" +" "+ averageY);
+//            sumUp += (left_line[i] - averageY) * (i - averageX);
+//            sumDown += (i - averageX) * (i - averageX);
+//        }
+//        if (sumDown == 0) parameterB = 0;
+//        else parameterB = sumUp / sumDown;
+//        parameterA = averageY - parameterB * averageX;
+//    }
+//    else if (type == 2)//拟合右线
+//    {
+//        for (i = startline; i < endline; i++)
+//        {
+//            sumX += i;
+//            sumY += right_line[i];
+//        }
+//        if (sumlines == 0) sumlines = 1;
+//        averageX = sumX / sumlines;     //x的平均值
+//        averageY = sumY / sumlines;     //y的平均值
+//        for (i = startline; i < endline; i++)
+//        {
+//            sumUp += (right_line[i] - averageY) * (i - averageX);
+//            sumDown += (i - averageX) * (i - averageX);
+//        }
+//        if (sumDown == 0) parameterB = 0;
+//        else parameterB = sumUp / sumDown;
+//        parameterA = averageY - parameterB * averageX;
+//
+//    }
+//}
+//
+//int judge(void)
+//{
+//    int flag=1;//0 no;1 yes
+//    for(int i=30;i<=100;i++)
+//    {
+//        if(Abs(mid_line[i]-mid_line[i+1])>=3)
+//        {
+//            flag=0;
+//            break;
+//        }
+//    }
+//    return flag;
+//}
 
 void banmaxian(void)
 {
