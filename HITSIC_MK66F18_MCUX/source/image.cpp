@@ -37,8 +37,8 @@ int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
 uint8_t threshold = 150;//阈值
 uint8_t mid_line_last[CAMERA_H];
-uint8_t num[2]={0,0};
-uint8_t cishu=0;
+uint8_t stop_num[2]={0,0};
+uint8_t stop_cishu=0;
 //uint8_t* fullBuffer;
 ////////////////////////////////////////////
 //功能：二值化
@@ -846,22 +846,26 @@ int judge(void)
 
 void banmaxian(void)
 {
-    int diff=0;
+    int diff=0;//差值
     for (int j = 20; j < 168; j++)
     {
         if (IMG[60][j] == white && IMG[60][j + 1] == black)
         {
-            num[1]++;
+            stop_num[0]++;
+        }
+        if (IMG[80][j] == white && IMG[80][j + 1] == black)
+        {
+            stop_num[1]++;
         }
     }
-    diff =  num[0] - num[1];
+    diff =  stop_num[0] - stop_num[1];
     if (diff > 7)
     {
-        cishu++;
+        stop_cishu++;
     }
-    num[0] = num[1];
-    num[1] = 0;
-    if (cishu >= 2)
+    stop_num[0] = 0;
+    stop_num[1] = 0;
+    if (stop_cishu >= 2)
     {
         ctrl_angCtrlEn[0] = 0;
     }

@@ -38,8 +38,8 @@ extern uint8_t mid_line[CAMERA_H];
 extern uint8_t mid_line_last[CAMERA_H];
 extern uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 extern uint8_t threshold;
-extern uint8_t cishu;//斑马线计次数
-extern uint8_t num[2];
+extern uint8_t stop_cishu;//斑马线计次数
+extern uint8_t stop_num[2];
 void head_clear(void);
 void THRE(uint8_t* fullBuffer);
 int find_f(int a);
