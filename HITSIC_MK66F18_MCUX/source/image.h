@@ -38,8 +38,9 @@ extern uint8_t mid_line[CAMERA_H];
 extern uint8_t mid_line_last[CAMERA_H];
 extern uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 extern uint8_t threshold;
-extern uint8_t stop_cishu;//斑马线计次数
 extern uint8_t stop_num[2];
+extern uint8_t stop_flag;
+extern uint8_t image_times;//为了给上次中线赋初值
 void head_clear(void);
 void THRE(uint8_t* fullBuffer);
 int find_f(int a);
@@ -52,13 +53,6 @@ void image_main();
 void get_mid_line(void);
 
 void my_memset(uint8_t* ptr, uint8_t num, uint8_t size);
-//int Abs(int num);
-//void find_rightdown_point(int start_point, int end_point);//寻找右下拐点
-//void find_leftdown_point(int start_point, int end_point);//寻找左下拐点
-//void find_rightup_point(int start_point, int end_point);
-//void find_leftup_point(int start_point, int end_point);
-//void regression(int type, int startline, int endline);
-//int judge(void);//判断此次中线是否符合要求
 void banmaxian(void);
 
 
