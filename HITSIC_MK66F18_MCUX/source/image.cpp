@@ -437,21 +437,20 @@ void image_main()
                    {
                        int flag = 0;
                        int times = 0;
-                       for (int i = 0; i <= 90; i++)
+                       for (int i = 0; i <= 40; i++)
                        {
                            if (IMG[i][94] == black)
                            {
                                times++;
                            }
                        }
-                       if (times < 10)
+                       if (times < 20)
                        {
                            flag = 1;
                        }
                        if (flag == 1)
                        {
                            crossroad_flag_far++;
-                           //printf("%d", 1);
                        }
                        break;
                    }
@@ -459,21 +458,20 @@ void image_main()
                    {
                        int flag = 0;
                        int times = 0;
-                       for (int i = 0; i <= 90; i++)
+                       for (int i = 0; i <= 40; i++)
                        {
                            if (IMG[i][94] == black )
                            {
                                times++;
                            }
                        }
-                       if (times < 10)
+                       if (times < 20)
                        {
                            flag = 1;
                        }
                        if (flag == 1)
                        {
                            crossroad_flag_close++;
-                           //printf("%d", 2);
                        }
                        break;
                    }
