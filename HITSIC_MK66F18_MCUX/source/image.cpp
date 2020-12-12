@@ -458,19 +458,19 @@ void image_main()
 void banmaxian(void)
 {
     int diff=0;//差值
-    for (int j = 20; j < 168; j++)
+    for (int j = 0; j < 188; j++)
     {
-        if (IMG[70][j] == white && IMG[70][j + 1] == black)
+        if (IMG[60][j] == white && IMG[60][j + 1] == black)
         {
             stop_num[0]++;
         }
-        if (IMG[90][j] == white && IMG[90][j + 1] == black)
+        if (IMG[80][j] == white && IMG[80][j + 1] == black)
         {
             stop_num[1]++;
         }
     }
     diff =  stop_num[0] - stop_num[1];
-    if (diff > 7)
+    if (diff > 5)
     {
         if(stop_flag==0)
         {
@@ -481,7 +481,7 @@ void banmaxian(void)
             stop_flag=3;
         }
     }
-    else if(diff < -7)
+    else if(diff < -5)
     {
         if(stop_flag==1)
         {
