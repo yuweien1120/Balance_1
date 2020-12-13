@@ -178,15 +178,16 @@ void main(void)
     Balance_Init();
     AngleFilter_Init();
 
-    /** 初始化结束，开启总中断 */
-    HAL_ExitCritical();
-
-    /**延时发车**/
-    SDK_DelayAtLeastUs(1000000, 180000000);//延时启动
     ctrl_angCtrlEn[0]=1;
     ctrl_spdCtrlEn[0]=0;
     ctrl_dirCtrlEn[0]=0;
-    SDK_DelayAtLeastUs(3000000, 180000000);
+
+    /** 初始化结束，开启总中断 */
+    SDK_DelayAtLeastUs(1000000, 180000000);//延时启动
+    HAL_ExitCritical();
+
+    /**延时发车**/
+    SDK_DelayAtLeastUs(2000000, 180000000);
     ctrl_angCtrlEn[0]=1;
     ctrl_spdCtrlEn[0]=1;
     ctrl_dirCtrlEn[0]=1;
@@ -204,7 +205,7 @@ void main(void)
         image_main();
         if(stop_flag==4)
         {
-            SDK_DelayAtLeastUs(2000000, 180000000);
+            SDK_DelayAtLeastUs(800000, 180000000);////////////////////////////////////
             ctrl_angCtrlEn[0]=0;
         }
         if(!GPIO_PinRead(GPIOA,9))
